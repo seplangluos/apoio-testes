@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLUOS - Sistema de Produtividade</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.png" type="image/png" />
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="login-card card">
+                <div class="card__body">
+                    <h1 class="login-title">GLUOS</h1>
+                    <p class="login-subtitle">Gerência de Licenciamento de Uso e Ocupação do Solo</p>
+                    <p class="login-description">Sistema de Produtividade</p>
+                    
+                    <div id="firebase-status" class="firebase-status">
+                        <span id="firebase-indicator" class="status-indicator status-indicator--warning"></span>
+                        <span id="firebase-status-text">Conectando ao Firebase...</span>
+                    </div>
+                    
+                    <form id="login-form" class="login-form">
+                        <div class="form-group">
+                            <label for="user-select" class="form-label">Selecione seu usuário:</label>
+                            <select id="user-select" name="user-select" class="form-control user-dropdown" required style="background-color: white; color: black; border: 2px solid #ccc; padding: 10px; font-size: 14px; cursor: pointer; position: relative; z-index: 999;">
+                                <option value="" style="color: #666;">-- Selecione um usuário --</option>
+                                <option value="Eduardo" style="color: black;">Eduardo</option>
+                                <option value="Wendel" style="color: black;">Wendel</option>
+                                <option value="Júlia" style="color: black;">Júlia</option>
+                                <option value="Tati" style="color: black;">Tati</option>
+                                <option value="Sônia" style="color: black;">Sônia</option>
+                                <option value="Rita" style="color: black;">Rita</option>
+                                <option value="Mara" style="color: black;">Mara</option>
+                                <option value="Admin" style="color: black;">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password" class="form-label">Senha:</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha" required style="background-color: white; color: black; border: 2px solid #ccc; padding: 10px;">
+                        </div>
+                        
+                        <button type="submit" id="login-btn" class="btn btn--primary btn--full-width" style="background-color: #21808d; color: white; border: none; padding: 12px; cursor: pointer; font-size: 16px;">
+                            <span id="login-btn-text">Entrar</span>
+                            <span id="login-loader" class="hidden">Entrando...</span>
+                        </button>
+                    </form>
+                    
+                    <div id="login-error" class="error-message hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Principal -->
+    <div id="dashboard-screen" class="screen">
+        <div class="dashboard-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-info">
+                        <h2>Sistema GLUOS</h2>
+                        <p id="user-info">Bem-vindo!</p>
+                        <p id="datetime-info">Data e hora</p>
+                        <div class="sync-status">
+                            <span id="sync-indicator" class="status-indicator status-indicator--success"></span>
+                            <span id="sync-status-text">Sincronizado</span>
+                        </div>
+                    </div>
+                    <button id="logout-btn" class="btn btn--outline">Sair</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="dashboard-content">
+                <h3>Selecione uma opção:</h3>
+                <div class="dashboard-buttons">
+                    <button id="new-entry-btn" class="btn btn--success btn--lg">
+                        <span>📝</span>
+                        Novo
+                    </button>
+                    <button id="multiple-entries-btn" class="btn btn--success btn--lg">
+                        <span>📝📝</span>
+                        Novos
+                    </button>
+                    <button id="search-btn" class="btn btn--primary btn--lg">
+                        <span>🔍</span>
+                        Pesquisa
+                    </button>
+                    <button id="database-btn" class="btn btn--secondary btn--lg">
+                        <span>🗄️</span>
+                        Base de Dados Completa
+                    </button>
+                    <button id="profile-btn" class="btn btn--profile btn--lg">
+                        <span>👤</span>
+                        Perfil
+                    </button>
+                    <button id="report-btn" class="btn btn--info btn--lg">
+                        <span>📊</span>
+                        Relatório
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Nova Entrada -->
+    <div id="new-entry-screen" class="screen">
+        <div class="screen-header">
+            <div class="container">
+                <div class="header-content">
+                    <h2>Nova Entrada</h2>
+                    <button id="back-to-dashboard-1" class="btn btn--outline">Voltar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="form-container">
+                <form id="new-entry-form" class="card">
+                    <div class="card__body">
+                        <div class="form-group">
+                            <label for="subject-number" class="form-label">Número do Assunto (1-47):</label>
+                            <input type="number" id="subject-number" class="form-control" min="1" max="47" placeholder="Digite o número do assunto">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject-select" class="form-label">Ou selecione o assunto: *</label>
+                            <select id="subject-select" class="form-control" required>
+                                <option value="">-- Selecione o assunto --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="process-number" class="form-label">Nº Processo/Protocolo: *</label>
+                            <input type="text" id="process-number" class="form-control" placeholder="informe número do processo ou protocolo, ou digite 0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contributor" class="form-label">Contribuinte:</label>
+                            <input type="text" id="contributor" class="form-control" placeholder="Nome do contribuinte">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ctm" class="form-label">CTM:</label>
+                            <input type="text" id="ctm" class="form-control" placeholder="CTM">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="observation" class="form-label">Observação:</label>
+                            <textarea id="observation" class="form-control" rows="4" placeholder="Digite suas observações aqui..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="habite-number" class="form-label">Número do Habite-se/Alvará:</label>
+                            <input type="text" id="habite-number" class="form-control" placeholder="Número do Habite-se/Alvará">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="alvara-situation" class="form-label">Situação do Alvará de Funcionamento:</label>
+                            <select id="alvara-situation" class="form-control">
+                                <option value="">-- Selecione --</option>
+                                <option value="Deferido">Deferido</option>
+                                <option value="Indeferido">Indeferido</option>
+                                <option value="Em Análise">Em Análise</option>
+                                <option value="Pendente">Pendente</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn--success btn--full-width">
+                            <span id="save-btn-text">Salvar Entrada</span>
+                            <span id="save-loader" class="hidden">Salvando...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+ <!-- Tela de Múltiplas Entradas -->
+    <div id="multiple-entries-screen" class="screen">
+        <div class="screen-header">
+            <div class="container">
+                <div class="header-content">
+                    <h2>Múltiplas Entradas</h2>
+                    <button id="back-to-dashboard-2" class="btn btn--outline">Voltar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="form-container">
+                <div class="card">
+                    <div class="card__body">
+                        <h3>1. Escolha o assunto comum:</h3>
+                        <div class="form-group">
+                            <label for="multi-subject-number" class="form-label">Número do Assunto (1-47):</label>
+                            <input type="number" id="multi-subject-number" class="form-control" min="1" max="47" placeholder="Digite o número do assunto">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="multi-subject-select" class="form-label">Ou selecione o assunto: *</label>
+                            <select id="multi-subject-select" class="form-control" required>
+                                <option value="">-- Selecione o assunto --</option>
+                            </select>
+                        </div>
+                        
+                        <button type="button" id="set-subject-btn" class="btn btn--primary">Definir Assunto</button>
+                    </div>
+                </div>
+                
+                <div id="multiple-forms-container" class="hidden">
+                    <div class="selected-subject-info card">
+                        <div class="card__body">
+                            <h4>Assunto selecionado:</h4>
+                            <p id="selected-subject-text"></p>
+                            
+                            <div class="info-text" style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 15px 0; color: #1976d2; font-size: 14px;">
+                                <strong>Instruções:</strong> Para cadastrar até 10 entradas de um assunto, selecione a quantidade e preencha Nº de processo e Observação, caso tenha.
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="quantity-select" class="form-label">Quantidade de processos (1-10):</label>
+                                <select id="quantity-select" class="form-control">
+                                    <option value="">-- Selecione a quantidade --</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                            
+                            <button type="button" id="save-all-btn" class="btn btn--success" style="display:none;">Salvar Todas as Entradas</button>
+                        </div>
+                    </div>
+                    
+                    <div id="processes-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Pesquisa -->
+    <div id="search-screen" class="screen">
+        <div class="screen-header">
+            <div class="container">
+                <div class="header-content">
+                    <h2>Pesquisar Processos</h2>
+                    <button id="back-to-dashboard-3" class="btn btn--outline">Voltar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="search-container">
+                <div class="search-form card">
+                    <div class="card__body">
+                        <div class="search-tabs">
+                            <button type="button" class="tab-btn active" data-tab="process">Por Processo</button>
+                            <button type="button" class="tab-btn" data-tab="date">Por Data</button>
+                            <button type="button" class="tab-btn" data-tab="server">Por Servidor</button>
+                        </div>
+                        
+                        <div id="process-search" class="search-tab active">
+                            <div class="form-group">
+                                <label for="search-process" class="form-label">Número do Processo:</label>
+                                <input type="text" id="search-process" class="form-control" placeholder="Digite o número do processo">
+                            </div>
+                        </div>
+                        
+                        <div id="date-search" class="search-tab">
+                            <div class="form-group">
+                                <label for="search-date" class="form-label">Data:</label>
+                                <input type="date" id="search-date" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div id="server-search" class="search-tab">
+                            <div class="form-group">
+                                <label for="search-server" class="form-label">Servidor:</label>
+                                <select id="search-server" class="form-control">
+                                    <option value="">-- Selecione --</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="search-submit" class="btn btn--primary">
+                            <span id="search-btn-text">Pesquisar</span>
+                            <span id="search-loader" class="hidden">Pesquisando...</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="search-results" class="results-container hidden">
+                    <h3>Resultados da Pesquisa</h3>
+                    <div class="table-container">
+                        <table id="search-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Hora</th>
+                                    <th>Servidor</th>
+                                    <th>N° Processo</th>
+                                    <th>Assunto</th>
+                                    <th>Contribuinte</th>
+                                    <th>CTM</th>
+                                    <th>Observação</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela da Base de Dados -->
+    <div id="database-screen" class="screen">
+        <div class="screen-header">
+            <div class="container">
+                <div class="header-content">
+                    <h2>Base de Dados Completa</h2>
+                    <button id="back-to-dashboard-4" class="btn btn--outline">Voltar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="database-container">
+                <div class="filters-card card">
+                    <div class="card__body">
+                        <h3>Filtros</h3>
+                        <div class="filters-row">
+                            <div class="form-group">
+                                <label for="filter-server" class="form-label">Servidor:</label>
+                                <select id="filter-server" class="form-control">
+                                    <option value="">Todos</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filter-subject" class="form-label">Assunto:</label>
+                                <select id="filter-subject" class="form-control">
+                                    <option value="">Todos</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filter-date" class="form-label">Data:</label>
+                                <input type="date" id="filter-date" class="form-control">
+                            </div>
+                        </div>
+                        <button type="button" id="apply-filters" class="btn btn--primary">Aplicar Filtros</button>
+                        <button type="button" id="clear-filters" class="btn btn--outline">Limpar Filtros</button>
+                    </div>
+                </div>
+                
+                <div class="database-results">
+                    <div class="results-header">
+                        <h3>Registros</h3>
+                        <span id="total-records" class="records-count">0 registros</span>
+                    </div>
+                    <div class="table-container">
+                        <table id="database-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Hora</th>
+                                    <th>Servidor</th>
+                                    <th>N° Processo</th>
+                                    <th>Assunto</th>
+                                    <th>Contribuinte</th>
+                                    <th>CTM</th>
+                                    <th>Observação</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Relatórios -->
+    <div id="report-screen" class="screen">
+        <div class="screen-header">
+            <div class="container">
+                <div class="header-content">
+                    <h2>Relatórios</h2>
+                    <button id="back-to-dashboard-5" class="btn btn--outline">Voltar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="report-container">
+                <div class="report-type-selector card">
+                    <div class="card__body">
+                        <h3>Tipo de Relatório</h3>
+                        <div class="report-buttons">
+                            <button id="personal-report-btn" class="btn btn--primary btn--lg">
+                                <span>📊</span>
+                                Relatório Pessoal
+                            </button>
+                            <button id="complete-report-btn" class="btn btn--secondary btn--lg">
+                                <span>📈</span>
+                                Relatório Completo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="report-form" class="report-form card hidden">
+                    <div class="card__body">
+                        <h3 id="report-form-title">Relatório</h3>
+                        <div class="form-group">
+                            <label for="report-start-date" class="form-label">Data Inicial: *</label>
+                            <input type="date" id="report-start-date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="report-end-date" class="form-label">Data Final: *</label>
+                            <input type="date" id="report-end-date" class="form-control" required>
+                        </div>
+                        <button type="button" id="generate-report-btn" class="btn btn--success">
+                            <span id="generate-btn-text">Gerar Relatório</span>
+                            <span id="generate-loader" class="hidden">Gerando...</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="report-results" class="report-results hidden">
+                    <div class="report-info card">
+                        <div class="card__body">
+                            <h3 id="report-title">Relatório</h3>
+                            <div id="report-meta" class="report-meta"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-table card">
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="report-table" class="data-table">
+                                    <thead id="report-table-head"></thead>
+                                    <tbody id="report-table-body"></tbody>
+                                    <tfoot id="report-table-foot"></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="report-summary" class="report-summary card hidden">
+                        <div class="card__body">
+                            <h4>Resumo</h4>
+                            <div id="summary-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Sucesso -->
+    <div id="success-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Sucesso!</h3>
+            </div>
+            <div class="modal-body">
+                <p id="success-message">Operação realizada com sucesso!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="close-modal" class="btn btn--primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Perfil -->
+    <div id="profile-modal" class="modal hidden">
+        <div class="modal-content modal-content--large">
+            <div class="modal-header">
+                <h3>Perfil do Usuário</h3>
+            </div>
+            <div class="modal-body">
+                <div class="profile-info">
+                    <p><strong>Usuário:</strong> <span id="profile-username"></span></p>
+                </div>
+                
+                <form id="password-change-form">
+                    <div class="form-group">
+                        <label for="current-password" class="form-label">Senha Atual: *</label>
+                        <input type="password" id="current-password" class="form-control" placeholder="Digite sua senha atual" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new-password" class="form-label">Nova Senha: *</label>
+                        <input type="password" id="new-password" class="form-control" placeholder="Digite sua nova senha (mín. 3 caracteres)" required minlength="3">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password" class="form-label">Confirmar Nova Senha: *</label>
+                        <input type="password" id="confirm-password" class="form-control" placeholder="Confirme sua nova senha" required>
+                    </div>
+                    
+                    <div id="password-error" class="error-message hidden"></div>
+                    
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn--success">
+                            <span id="password-btn-text">Salvar Alterações</span>
+                            <span id="password-loader" class="hidden">Salvando...</span>
+                        </button>
+                        <button type="button" id="cancel-profile" class="btn btn--outline">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content modal-content--large">
+            <div class="modal-header">
+                <h3>Editar Entrada</h3>
+            </div>
+            <div class="modal-body">
+                <form id="edit-entry-form">
+                    <input type="hidden" id="edit-entry-id">
+                    
+                    <div class="form-group">
+                        <label for="edit-subject-select" class="form-label">Assunto: *</label>
+                        <select id="edit-subject-select" class="form-control" required></select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-process-number" class="form-label">Nº Processo/Protocolo: *</label>
+                        <input type="text" id="edit-process-number" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-contributor" class="form-label">Contribuinte:</label>
+                        <input type="text" id="edit-contributor" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-ctm" class="form-label">CTM:</label>
+                        <input type="text" id="edit-ctm" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-observation" class="form-label">Observação:</label>
+                        <textarea id="edit-observation" class="form-control" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-habite-number" class="form-label">Número do Habite-se/Alvará:</label>
+                        <input type="text" id="edit-habite-number" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-alvara-situation" class="form-label">Situação do Alvará de Funcionamento:</label>
+                        <select id="edit-alvara-situation" class="form-control">
+                            <option value="">-- Selecione --</option>
+                            <option value="Deferido">Deferido</option>
+                            <option value="Indeferido">Indeferido</option>
+                            <option value="Em Análise">Em Análise</option>
+                            <option value="Pendente">Pendente</option>
+                        </select>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn--success">
+                            <span id="edit-btn-text">Salvar Alterações</span>
+                            <span id="edit-loader" class="hidden">Salvando...</span>
+                        </button>
+                        <button type="button" id="cancel-edit" class="btn btn--outline">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Conectando ao Firebase...</p>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
