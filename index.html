@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -191,45 +190,119 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="container">
             <div class="form-container">
-                <div class="card">
+                <!-- Primeira etapa: Seleção do assunto -->
+                <div id="subject-selection-stage" class="card">
                     <div class="card__body">
                         <h3>1. Escolha o assunto comum:</h3>
                         <div class="form-group">
                             <label for="multi-subject-number" class="form-label">Número do Assunto (1-47):</label>
                             <input type="number" id="multi-subject-number" class="form-control" min="1" max="47" placeholder="Digite o número do assunto">
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="multi-subject-select" class="form-label">Ou selecione o assunto: *</label>
                             <select id="multi-subject-select" class="form-control" required>
                                 <option value="">-- Selecione o assunto --</option>
                             </select>
                         </div>
-                        
-                        <button type="button" id="set-subject-btn" class="btn btn--primary">Definir Assunto</button>
+
+                        <button type="button" id="set-subject-btn" class="btn btn--primary">Definir</button>
                     </div>
                 </div>
-                
-                <div id="multiple-forms-container" class="hidden">
-                    <div class="selected-subject-info card">
-                        <div class="card__body">
+
+                <!-- Segunda etapa: Seleção da quantidade (inicialmente oculta) -->
+                <div id="quantity-selection-stage" class="card hidden">
+                    <div class="card__body">
+                        <h3>2. Selecione a quantidade de processos:</h3>
+                        <div class="form-group">
+                            <label for="process-quantity" class="form-label">Quantidade (1-10):</label>
+                            <select id="process-quantity" class="form-control" required>
+                                <option value="">-- Selecione --</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+
+                        <button type="button" id="confirm-quantity-btn" class="btn btn--primary">Confirmar</button>
+                    </div>
+                </div>
+
+                <!-- Terceira etapa: Preenchimento dos processos (inicialmente oculta) -->
+                <div id="process-input-stage" class="card hidden">
+                    <div class="card__body">
+                        <div class="selected-subject-info">
                             <h4>Assunto selecionado:</h4>
                             <p id="selected-subject-text"></p>
-                            <button type="button" id="add-process-btn" class="btn btn--secondary">Adicionar Processo</button>
-                            <button type="button" id="save-all-btn" class="btn btn--success">Salvar Todas as Entradas</button>
                         </div>
+
+                        <h3>3. Preencha os números dos processos:</h3>
+                        <div id="process-inputs-container">
+                            <!-- Os inputs serão gerados dinamicamente -->
+                        </div>
+
+                        <button type="button" id="save-multiple-entries-btn" class="btn btn--success">Salvar</button>
                     </div>
-                    
-                    <div id="processes-container"></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Tela de Pesquisa -->
+        <!-- Modal para campos opcionais -->
+        <div id="optional-fields-modal" class="modal hidden">
+            <div class="modal-content modal-content--large">
+                <div class="modal-header">
+                    <h3>Dados Adicionais - Processo <span id="modal-process-number"></span></h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="modal-contributor" class="form-label">Contribuinte:</label>
+                        <input type="text" id="modal-contributor" class="form-control" placeholder="Nome do contribuinte">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modal-ctm" class="form-label">CTM:</label>
+                        <input type="text" id="modal-ctm" class="form-control" placeholder="CTM">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modal-observation" class="form-label">Observação:</label>
+                        <textarea id="modal-observation" class="form-control" rows="4" placeholder="Digite suas observações aqui..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modal-habite-number" class="form-label">Número do Habite-se/Alvará:</label>
+                        <input type="text" id="modal-habite-number" class="form-control" placeholder="Número do Habite-se/Alvará">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modal-alvara-situation" class="form-label">Situação do Alvará de Funcionamento:</label>
+                        <select id="modal-alvara-situation" class="form-control">
+                            <option value="">-- Selecione --</option>
+                            <option value="Deferido">Deferido</option>
+                            <option value="Indeferido">Indeferido</option>
+                            <option value="Em Análise">Em Análise</option>
+                            <option value="Pendente">Pendente</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="save-optional-fields-btn" class="btn btn--success">Salvar</button>
+                    <button type="button" id="cancel-optional-fields-btn" class="btn btn--outline">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+<!-- Tela de Pesquisa -->
     <div id="search-screen" class="screen">
         <div class="screen-header">
             <div class="container">
