@@ -888,7 +888,7 @@ function resetMultipleEntriesForm() {
   // Esconder modal se estiver aberto
   hideOptionalFieldsModal();
 }
-function handleSaveAllEntries() {
+async function handleSaveAllEntries() {
     if (!selectedSubjectForMultiple) {
         alert('Nenhum assunto selecionado.');
         return;
