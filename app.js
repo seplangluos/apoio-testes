@@ -1,11 +1,11 @@
-// Sistema GLUOS - Gerência de Licenciamento de Uso e Ocupação do Solo
-// Integração completa com Firebase - Versão com Firebase Authentication
-// Importações do Firebase v9+
+// Sistema GLUOS - GerÃªncia de Licenciamento de Uso e OcupaÃ§Ã£o do Solo
+// IntegraÃ§Ã£o completa com Firebase - VersÃ£o com Firebase Authentication
+// ImportaÃ§Ãµes do Firebase v9+
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
 import { getDatabase, ref, push, set, get, update, remove, onValue } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
 import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
 
-// Configuração do Firebase principal
+// ConfiguraÃ§Ã£o do Firebase principal
 const firebaseConfig = {
   apiKey: "AIzaSyDUUXFPi2qbowPjx63YBYQWyZNXKfxz7u0",
   authDomain: "gluos-apoio.firebaseapp.com",
@@ -16,7 +16,7 @@ const firebaseConfig = {
   appId: "1:200346424322:web:d359faf0c8582c58c0031b"
 };
 
-// Configuração da base de processos (NOVA)
+// ConfiguraÃ§Ã£o da base de processos (NOVA)
 const firebaseConfigProcessos = {
   apiKey: "AIzaSyAWbo9MCRjE4776A_DpjJCWHPZap-goJDg",
   authDomain: "processos-gluos.firebaseapp.com",
@@ -46,78 +46,78 @@ try {
   console.error('Erro ao inicializar Firebase de processos:', error);
 }
 
-// Mapeamento de usuários para emails
+// Mapeamento de usuÃ¡rios para emails
 const USER_EMAIL_MAPPING = {
   "Wendel": "wendel_hai@hotmail.com",
   "Eduardo": "edu_rich@hotmail.com",
-  "Sônia": "sonia@hotmail.com",
-  "Júlia": "julia@hotmail.com",
+  "SÃ´nia": "sonia@hotmail.com",
+  "JÃºlia": "julia@hotmail.com",
   "Rita": "rita@hotmail.com",
   "Mara": "mara@hotmail.com",
   "Tati": "tati@hotmail.com",
   "Admin": "seplan.gluos@valadares.mg.gov.br"
 };
 
-// Função para converter email para nome de usuário
+// FunÃ§Ã£o para converter email para nome de usuÃ¡rio
 function emailToUsername(email) {
   for (const [username, userEmail] of Object.entries(USER_EMAIL_MAPPING)) {
     if (userEmail === email) {
       return username;
     }
   }
-  return email; // Retorna o email se não encontrar o mapeamento
+  return email; // Retorna o email se nÃ£o encontrar o mapeamento
 }
 
-// Dados da aplicação
+// Dados da aplicaÃ§Ã£o
 const GLUOS_DATA = {
-  usuarios: ["Eduardo", "Wendel", "Júlia", "Tati", "Sônia", "Rita", "Mara", "Admin"],
+  usuarios: ["Eduardo", "Wendel", "JÃºlia", "Tati", "SÃ´nia", "Rita", "Mara", "Admin"],
   assuntos: [
     {id: 1, texto: "Separar e Preparar os Processos Agendados no Dia"},
-    {id: 2, texto: "Inserção de Avisos de Vistoria na E&L"},
+    {id: 2, texto: "InserÃ§Ã£o de Avisos de Vistoria na E&L"},
     {id: 3, texto: "Arquivamento de Processos"},
-    {id: 4, texto: "Solicitação de Desarquivamento"},
+    {id: 4, texto: "SolicitaÃ§Ã£o de Desarquivamento"},
     {id: 5, texto: "Atendimento ao Contribuinte"},
-    {id: 6, texto: "Pós Atendimento Balcão"},
+    {id: 6, texto: "PÃ³s Atendimento BalcÃ£o"},
     {id: 7, texto: "Atendimento ao Telefone"},
     {id: 8, texto: "Apoio aos Arquitetos/Engenheiros"},
     {id: 9, texto: "Envio de E-mail para o Arquitetos/Enginheiros"},
-    {id: 10, texto: "Solicitação de Desarquivamento de Processo"},
-    {id: 11, texto: "Lançamento Habite-se no E&L e na Receita Federal"},
-    {id: 12, texto: "Lançamento de Alvará no E&L e na Receita Federal"},
-    {id: 13, texto: "Lançamento de Sanção"},
+    {id: 10, texto: "SolicitaÃ§Ã£o de Desarquivamento de Processo"},
+    {id: 11, texto: "LanÃ§amento Habite-se no E&L e na Receita Federal"},
+    {id: 12, texto: "LanÃ§amento de AlvarÃ¡ no E&L e na Receita Federal"},
+    {id: 13, texto: "LanÃ§amento de SanÃ§Ã£o"},
     {id: 14, texto: "Preenchimento da Planilha de Controle Interno GLUOS"},
     {id: 15, texto: "Controle de Ponto GLUOS"},
-    {id: 16, texto: "Confecção de Ofícios"},
-    {id: 17, texto: "Solicitação de Materiais de Escritório"},
-    {id: 18, texto: "Atendimento/Notificação de Alvará de Funcionamento"},
-    {id: 19, texto: "Prorrogação de Processo Alvará de Funcionamento"},
-    {id: 20, texto: "Indeferimento de Processo Alvará de Funcionamento"},
-    {id: 21, texto: "Lançamento do Número dos Processos Finalizados"},
-    {id: 22, texto: "Notificação de Alvará de Funcionamento"},
-    {id: 23, texto: "Lançamento de Processos Novos"},
+    {id: 16, texto: "ConfecÃ§Ã£o de OfÃ­cios"},
+    {id: 17, texto: "SolicitaÃ§Ã£o de Materiais de EscritÃ³rio"},
+    {id: 18, texto: "Atendimento/NotificaÃ§Ã£o de AlvarÃ¡ de Funcionamento"},
+    {id: 19, texto: "ProrrogaÃ§Ã£o de Processo AlvarÃ¡ de Funcionamento"},
+    {id: 20, texto: "Indeferimento de Processo AlvarÃ¡ de Funcionamento"},
+    {id: 21, texto: "LanÃ§amento do NÃºmero dos Processos Finalizados"},
+    {id: 22, texto: "NotificaÃ§Ã£o de AlvarÃ¡ de Funcionamento"},
+    {id: 23, texto: "LanÃ§amento de Processos Novos"},
     {id: 24, texto: "Recebimento de Processo"},
     {id: 25, texto: "Rastreamento de Processo"},
-    {id: 26, texto: "Distribuição de Processo"},
-    {id: 27, texto: "Mudança de Passo no Sistema"},
-    {id: 28, texto: "Notificação Atendidas por E-mail"},
-    {id: 29, texto: "Separação de Processo e Distribuição para Eng/Arq"},
-    {id: 30, texto: "Lançamento no Sistema de Pendências pós Atendimento"},
+    {id: 26, texto: "DistribuiÃ§Ã£o de Processo"},
+    {id: 27, texto: "MudanÃ§a de Passo no Sistema"},
+    {id: 28, texto: "NotificaÃ§Ã£o Atendidas por E-mail"},
+    {id: 29, texto: "SeparaÃ§Ã£o de Processo e DistribuiÃ§Ã£o para Eng/Arq"},
+    {id: 30, texto: "LanÃ§amento no Sistema de PendÃªncias pÃ³s Atendimento"},
     {id: 31, texto: "Envio de Processo ao Arquivo Geral/GFO"},
-    {id: 32, texto: "Resposta as Mensagens Via WhatsApp Conforme as Notificações no Processo"},
+    {id: 32, texto: "Resposta as Mensagens Via WhatsApp Conforme as NotificaÃ§Ãµes no Processo"},
     {id: 33, texto: "Arquivamento de Processos Deferidos Semanal"},
-    {id: 34, texto: "Digitação de Notificações"},
-    {id: 35, texto: "Confecção de Planilha de Vistoria Semanal"},
-    {id: 36, texto: "Localização de Processo Físico e no Sistema"},
-    {id: 37, texto: "Encaminhamento de Processo para Análise"},
-    {id: 38, texto: "Estudo de Viabilidade Urbanística"},
+    {id: 34, texto: "DigitaÃ§Ã£o de NotificaÃ§Ãµes"},
+    {id: 35, texto: "ConfecÃ§Ã£o de Planilha de Vistoria Semanal"},
+    {id: 36, texto: "LocalizaÃ§Ã£o de Processo FÃ­sico e no Sistema"},
+    {id: 37, texto: "Encaminhamento de Processo para AnÃ¡lise"},
+    {id: 38, texto: "Estudo de Viabilidade UrbanÃ­stica"},
     {id: 39, texto: "Envio de e-mail para Contadores"},
-    {id: 40, texto: "Análise de Matrícula para Sala Mineira"},
+    {id: 40, texto: "AnÃ¡lise de MatrÃ­cula para Sala Mineira"},
     {id: 41, texto: "Indeferimento de Processo"},
-    {id: 42, texto: "Requisição de Veículo"},
+    {id: 42, texto: "RequisiÃ§Ã£o de VeÃ­culo"},
     {id: 43, texto: "Encaminhamento de Processo a Outros Setores"},
     {id: 44, texto: "Montagem de Processo Novo"},
     {id: 45, texto: "Encaminhamento para indeferimento"},
-    {id: 46, texto: "Protocolo de informação Básica"},
+    {id: 46, texto: "Protocolo de informaÃ§Ã£o BÃ¡sica"},
     {id: 47, texto: "Agendamento para contribuinte"}
   ]
 };
@@ -130,11 +130,11 @@ let selectedSubjectForMultiple = null;
 let currentReportType = null;
 let firebaseConnected = false;
 
-// Inicialização
+// InicializaÃ§Ã£o
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Sistema GLUOS iniciando...');
   
-  // Forçar recriação do select com JavaScript para garantir funcionalidade
+  // ForÃ§ar recriaÃ§Ã£o do select com JavaScript para garantir funcionalidade
   fixUserSelect();
   initializeFirebase();
   setupEventListeners();
@@ -146,18 +146,18 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('Sistema inicializado com sucesso!');
 });
 
-// Corrigir o select de usuário
+// Corrigir o select de usuÃ¡rio
 function fixUserSelect() {
   const userSelect = document.getElementById('user-select');
   if (userSelect) {
-    // Forçar z-index e pointer events
+    // ForÃ§ar z-index e pointer events
     userSelect.style.zIndex = '1000';
     userSelect.style.pointerEvents = 'auto';
     userSelect.style.position = 'relative';
     
     // Adicionar event listeners diretos
     userSelect.addEventListener('change', function() {
-      console.log('Usuário selecionado:', this.value);
+      console.log('UsuÃ¡rio selecionado:', this.value);
     });
     
     userSelect.addEventListener('click', function() {
@@ -165,26 +165,26 @@ function fixUserSelect() {
       this.focus();
     });
     
-    // Garantir que está funcional
+    // Garantir que estÃ¡ funcional
     userSelect.removeAttribute('disabled');
     userSelect.setAttribute('tabindex', '0');
     
-    console.log('Select de usuário corrigido');
+    console.log('Select de usuÃ¡rio corrigido');
   }
 }
 
-// Inicialização do Firebase
+// InicializaÃ§Ã£o do Firebase
 async function initializeFirebase() {
   try {
     updateFirebaseStatus('warning', 'Conectando ao Firebase...');
     
     if (!database || !auth) {
-      updateFirebaseStatus('error', 'Firebase não inicializado');
-      console.error('Database ou Auth não inicializado');
+      updateFirebaseStatus('error', 'Firebase nÃ£o inicializado');
+      console.error('Database ou Auth nÃ£o inicializado');
       return;
     }
     
-    // Verificar conexão com Firebase
+    // Verificar conexÃ£o com Firebase
     const testRef = ref(database, '.info/connected');
     onValue(testRef, (snapshot) => {
       firebaseConnected = snapshot.val() === true;
@@ -200,7 +200,7 @@ async function initializeFirebase() {
     
   } catch (error) {
     console.error('Erro ao conectar Firebase:', error);
-    updateFirebaseStatus('error', 'Erro de conexão');
+    updateFirebaseStatus('error', 'Erro de conexÃ£o');
     firebaseConnected = false;
   }
 }
@@ -236,7 +236,7 @@ async function loadAllEntries() {
 
 // Configurar event listeners
 function setupEventListeners() {
-  // Login - múltiplas abordagens para garantir funcionamento
+  // Login - mÃºltiplas abordagens para garantir funcionamento
   const loginForm = document.getElementById('login-form');
   const loginBtn = document.getElementById('login-btn');
   const userSelect = document.getElementById('user-select');
@@ -252,7 +252,7 @@ function setupEventListeners() {
       e.preventDefault();
       handleLogin(e);
     });
-    console.log('Event listener do botão de login adicionado');
+    console.log('Event listener do botÃ£o de login adicionado');
   }
   
   // Enter nos campos
@@ -273,342 +273,22 @@ function setupEventListeners() {
     });
   }
   
-  // Navegação principal
+  // NavegaÃ§Ã£o principal
   setupMainNavigation();
   
   // Nova entrada
   setupNewEntry();
   
+  // MÃºltiplas entradas
+  setupMultipleEntries();
   
-// Múltiplas entradas - Nova implementação
-function setupMultipleEntries() {
-    // Botões de navegação entre etapas
-    const confirmSubjectBtn = document.getElementById('confirm-subject-btn');
-    const confirmQuantityBtn = document.getElementById('confirm-quantity-btn');
-    const backToSubjectBtn = document.getElementById('back-to-subject-btn');
-    const backToQuantityBtn = document.getElementById('back-to-quantity-btn');
-    const saveAllProcessesBtn = document.getElementById('save-all-processes-btn');
-
-    // Campos de entrada
-    const multiSubjectNumber = document.getElementById('multi-subject-number');
-    const multiSubjectSelect = document.getElementById('multi-subject-select');
-    const quantitySelect = document.getElementById('quantity-select');
-
-    // Modal de campos adicionais
-    const additionalFieldsModal = document.getElementById('additional-fields-modal');
-    const saveAdditionalFieldsBtn = document.getElementById('save-additional-fields-btn');
-    const cancelAdditionalFieldsBtn = document.getElementById('cancel-additional-fields-btn');
-
-    // Variáveis globais para o fluxo
-    let selectedSubject = null;
-    let selectedQuantity = 0;
-    let currentProcessIndex = -1;
-    let processesData = {};
-
-    // Event listeners
-    if (confirmSubjectBtn) {
-        confirmSubjectBtn.addEventListener('click', handleConfirmSubject);
-    }
-
-    if (confirmQuantityBtn) {
-        confirmQuantityBtn.addEventListener('click', handleConfirmQuantity);
-    }
-
-    if (backToSubjectBtn) {
-        backToSubjectBtn.addEventListener('click', () => showStep('subject'));
-    }
-
-    if (backToQuantityBtn) {
-        backToQuantityBtn.addEventListener('click', () => showStep('quantity'));
-    }
-
-    if (saveAllProcessesBtn) {
-        saveAllProcessesBtn.addEventListener('click', handleSaveAllProcesses);
-    }
-
-    // Modal de campos adicionais
-    if (saveAdditionalFieldsBtn) {
-        saveAdditionalFieldsBtn.addEventListener('click', handleSaveAdditionalFields);
-    }
-
-    if (cancelAdditionalFieldsBtn) {
-        cancelAdditionalFieldsBtn.addEventListener('click', hideAdditionalFieldsModal);
-    }
-
-    // Auto-preencher assunto pelo número
-    if (multiSubjectNumber && multiSubjectSelect) {
-        multiSubjectNumber.addEventListener('input', function() {
-            const num = parseInt(this.value);
-            if (num >= 1 && num <= 47) {
-                const assunto = GLUOSDATA.assuntos.find(a => a.id === num);
-                if (assunto) {
-                    multiSubjectSelect.value = assunto.id;
-                }
-            }
-        });
-
-        // Sincronizar select com número
-        multiSubjectSelect.addEventListener('change', function() {
-            if (this.value) {
-                multiSubjectNumber.value = this.value;
-            }
-        });
-    }
-
-    function handleConfirmSubject() {
-        const subjectId = parseInt(document.getElementById('multi-subject-select').value);
-
-        if (!subjectId) {
-            alert('Por favor, selecione um assunto.');
-            return;
-        }
-
-        const assunto = GLUOSDATA.assuntos.find(a => a.id === subjectId);
-        selectedSubject = assunto;
-
-        // Atualizar display do assunto
-        const selectedSubjectDisplay = document.getElementById('selected-subject-display');
-        if (selectedSubjectDisplay) {
-            selectedSubjectDisplay.textContent = `${assunto.id} - ${assunto.texto}`;
-        }
-
-        showStep('quantity');
-    }
-
-    function handleConfirmQuantity() {
-        const quantity = parseInt(document.getElementById('quantity-select').value);
-
-        if (!quantity || quantity < 1 || quantity > 10) {
-            alert('Por favor, selecione uma quantidade válida (1-10).');
-            return;
-        }
-
-        selectedQuantity = quantity;
-
-        // Atualizar displays
-        const finalSubjectDisplay = document.getElementById('final-subject-display');
-        const finalQuantityDisplay = document.getElementById('final-quantity-display');
-
-        if (finalSubjectDisplay) {
-            finalSubjectDisplay.textContent = `${selectedSubject.id} - ${selectedSubject.texto}`;
-        }
-
-        if (finalQuantityDisplay) {
-            finalQuantityDisplay.textContent = quantity;
-        }
-
-        // Criar as caixas de processo
-        createProcessBoxes(quantity);
-
-        showStep('processes');
-    }
-
-    function createProcessBoxes(quantity) {
-        const processesList = document.getElementById('processes-list');
-        if (!processesList) return;
-
-        processesList.innerHTML = '';
-        processesData = {};
-
-        for (let i = 1; i <= quantity; i++) {
-            const processBox = document.createElement('div');
-            processBox.className = 'process-box';
-            processBox.innerHTML = `
-                <div class="process-item">
-                    <label class="form-label">Processo ${i}:</label>
-                    <div class="process-input-group">
-                        <input type="text" id="process-${i}" class="form-control process-number-input" 
-                               placeholder="Informe número do processo/protocolo">
-                        <button type="button" class="btn btn--secondary btn--sm process-plus-btn" 
-                                onclick="openAdditionalFields(${i})">+</button>
-                    </div>
-                </div>
-            `;
-            processesList.appendChild(processBox);
-
-            // Inicializar dados do processo
-            processesData[i] = {
-                processNumber: '',
-                contributor: '',
-                ctm: '',
-                observation: '',
-                habiteNumber: '',
-                alvaraSituation: ''
-            };
-        }
-    }
-
-    function showStep(step) {
-        // Esconder todas as etapas
-        document.getElementById('subject-selection-step').classList.add('hidden');
-        document.getElementById('quantity-selection-step').classList.add('hidden');
-        document.getElementById('processes-input-step').classList.add('hidden');
-
-        // Mostrar a etapa atual
-        switch(step) {
-            case 'subject':
-                document.getElementById('subject-selection-step').classList.remove('hidden');
-                break;
-            case 'quantity':
-                document.getElementById('quantity-selection-step').classList.remove('hidden');
-                break;
-            case 'processes':
-                document.getElementById('processes-input-step').classList.remove('hidden');
-                break;
-        }
-    }
-
-    // Função global para abrir campos adicionais
-    window.openAdditionalFields = function(processIndex) {
-        currentProcessIndex = processIndex;
-
-        // Preencher modal com dados existentes
-        const data = processesData[processIndex] || {};
-        document.getElementById('additional-contributor').value = data.contributor || '';
-        document.getElementById('additional-ctm').value = data.ctm || '';
-        document.getElementById('additional-observation').value = data.observation || '';
-        document.getElementById('additional-habite-number').value = data.habiteNumber || '';
-        document.getElementById('additional-alvara-situation').value = data.alvaraSituation || '';
-
-        showAdditionalFieldsModal();
-    };
-
-    function showAdditionalFieldsModal() {
-        if (additionalFieldsModal) {
-            additionalFieldsModal.classList.remove('hidden');
-        }
-    }
-
-    function hideAdditionalFieldsModal() {
-        if (additionalFieldsModal) {
-            additionalFieldsModal.classList.add('hidden');
-        }
-        currentProcessIndex = -1;
-    }
-
-    function handleSaveAdditionalFields() {
-        if (currentProcessIndex === -1) return;
-
-        // Salvar dados do modal
-        processesData[currentProcessIndex] = {
-            ...processesData[currentProcessIndex],
-            contributor: document.getElementById('additional-contributor').value.trim(),
-            ctm: document.getElementById('additional-ctm').value.trim(),
-            observation: document.getElementById('additional-observation').value.trim(),
-            habiteNumber: document.getElementById('additional-habite-number').value.trim(),
-            alvaraSituation: document.getElementById('additional-alvara-situation').value.trim()
-        };
-
-        hideAdditionalFieldsModal();
-    }
-
-    async function handleSaveAllProcesses() {
-        if (!selectedSubject) {
-            alert('Nenhum assunto selecionado.');
-            return;
-        }
-
-        const saveBtn = document.getElementById('save-all-processes-btn');
-        setButtonLoading(saveBtn, true);
-
-        // Coletar números dos processos das caixas de texto
-        const validEntries = [];
-        const now = new Date();
-        const date = now.toLocaleDateString('pt-BR');
-        const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        const timestamp = now.getTime();
-
-        for (let i = 1; i <= selectedQuantity; i++) {
-            const processInput = document.getElementById(`process-${i}`);
-            const processNumber = processInput ? processInput.value.trim() : '';
-
-            if (processNumber) {
-                // Atualizar dados do processo com o número digitado
-                processesData[i].processNumber = processNumber;
-
-                const entry = {
-                    subjectId: selectedSubject.id,
-                    subjectText: selectedSubject.texto,
-                    processNumber: processNumber,
-                    contributor: processesData[i].contributor || '',
-                    ctm: processesData[i].ctm || '',
-                    observation: processesData[i].observation || '',
-                    habiteNumber: processesData[i].habiteNumber || '',
-                    alvaraSituation: processesData[i].alvaraSituation || '',
-                    server: currentUser,
-                    date: date,
-                    time: time,
-                    timestamp: timestamp
-                };
-
-                validEntries.push(entry);
-            }
-        }
-
-        if (validEntries.length === 0) {
-            alert('Por favor, preencha pelo menos um número de processo.');
-            setButtonLoading(saveBtn, false);
-            return;
-        }
-
-        try {
-            // Salvar entradas
-            if (firebaseConnected && database) {
-                const entriesRef = ref(database, 'gluos/entries');
-                const promises = validEntries.map(entry => push(entriesRef, entry));
-                await Promise.all(promises);
-                console.log(`${validEntries.length} entradas salvas no Firebase`);
-            } else {
-                // Salvar localmente
-                validEntries.forEach((entry, index) => {
-                    entry.id = `local_${Date.now()}_${index}`;
-                    allEntries.unshift(entry);
-                });
-                console.log(`${validEntries.length} entradas salvas localmente`);
-            }
-
-            // Resetar formulário
-            resetMultipleEntriesForm();
-
-            // Mostrar mensagem de sucesso
-            showSuccessModal(`Salvo ${validEntries.length} entrada${validEntries.length > 1 ? 's' : ''} com sucesso!`);
-
-        } catch (error) {
-            console.error('Erro ao salvar entradas:', error);
-            alert('Erro ao salvar entradas. Tente novamente.');
-        } finally {
-            setButtonLoading(saveBtn, false);
-        }
-    }
-
-    function resetMultipleEntriesForm() {
-        // Resetar variáveis
-        selectedSubject = null;
-        selectedQuantity = 0;
-        currentProcessIndex = -1;
-        processesData = {};
-
-        // Limpar campos
-        document.getElementById('multi-subject-number').value = '';
-        document.getElementById('multi-subject-select').value = '';
-        document.getElementById('quantity-select').value = '';
-        document.getElementById('processes-list').innerHTML = '';
-
-        // Voltar para primeira etapa
-        showStep('subject');
-    }
-
-    // Inicializar na primeira etapa
-    showStep('subject');
-}
-
-// Pesquisa
+  // Pesquisa
   setupSearch();
   
   // Base de dados
   setupDatabase();
   
-  // Relatórios
+  // RelatÃ³rios
   setupReports();
   
   // Perfil
@@ -620,7 +300,7 @@ function setupMultipleEntries() {
   console.log('Todos os event listeners configurados');
 }
 
-// Configurar navegação principal
+// Configurar navegaÃ§Ã£o principal
 function setupMainNavigation() {
   // Logout
   const logoutBtn = document.getElementById('logout-btn');
@@ -628,7 +308,7 @@ function setupMainNavigation() {
     logoutBtn.addEventListener('click', handleLogout);
   }
   
-  // Botões do dashboard
+  // BotÃµes do dashboard
   const navButtons = [
     { id: 'new-entry-btn', screen: 'new-entry' },
     { id: 'multiple-entries-btn', screen: 'multiple-entries' },
@@ -642,7 +322,7 @@ function setupMainNavigation() {
     const element = document.getElementById(btn.id);
     if (element) {
       element.addEventListener('click', function() {
-        console.log(`Botão ${btn.id} clicado`);
+        console.log(`BotÃ£o ${btn.id} clicado`);
         if (btn.screen) {
           showScreen(btn.screen);
         }
@@ -653,7 +333,7 @@ function setupMainNavigation() {
     }
   });
   
-  // Botões de voltar
+  // BotÃµes de voltar
   const backButtons = [
     'back-to-dashboard-1', 'back-to-dashboard-2', 'back-to-dashboard-3', 
     'back-to-dashboard-4', 'back-to-dashboard-5'
@@ -678,8 +358,8 @@ async function handleLogin(e) {
   const loginBtn = document.getElementById('login-btn');
 
   if (!userSelect || !passwordInput) {
-    console.error('Elementos de login não encontrados');
-    alert('Erro interno: elementos de login não encontrados');
+    console.error('Elementos de login nÃ£o encontrados');
+    alert('Erro interno: elementos de login nÃ£o encontrados');
     return;
   }
 
@@ -699,9 +379,9 @@ async function handleLogin(e) {
     loginError.textContent = '';
   }
 
-  // Validação
+  // ValidaÃ§Ã£o
   if (!user) {
-    showLoginError('Por favor, selecione um usuário.');
+    showLoginError('Por favor, selecione um usuÃ¡rio.');
     return;
   }
 
@@ -710,10 +390,10 @@ async function handleLogin(e) {
     return;
   }
 
-  // Obter email do usuário
+  // Obter email do usuÃ¡rio
   const userEmail = USER_EMAIL_MAPPING[user];
   if (!userEmail) {
-    showLoginError('Usuário não encontrado.');
+    showLoginError('UsuÃ¡rio nÃ£o encontrado.');
     return;
   }
 
@@ -721,7 +401,7 @@ async function handleLogin(e) {
   setButtonLoading(loginBtn, true);
 
   try {
-    // Autenticação usando Firebase Auth
+    // AutenticaÃ§Ã£o usando Firebase Auth
     const userCredential = await signInWithEmailAndPassword(auth, userEmail, password);
     const firebaseUser = userCredential.user;
 
@@ -732,10 +412,10 @@ async function handleLogin(e) {
       uid: firebaseUser.uid 
     });
     
-    currentUser = user; // Manter o nome do usuário, não o email
+    currentUser = user; // Manter o nome do usuÃ¡rio, nÃ£o o email
     updateUserInfo();
 
-    // Limpar formulário
+    // Limpar formulÃ¡rio
     userSelect.value = '';
     passwordInput.value = '';
 
@@ -743,20 +423,20 @@ async function handleLogin(e) {
     showScreen('dashboard');
 
   } catch (error) {
-    // Em caso de erro de autenticação
+    // Em caso de erro de autenticaÃ§Ã£o
     console.error('Erro no login:', error);
     
-    // Mensagens de erro mais específicas
+    // Mensagens de erro mais especÃ­ficas
     if (error.code === 'auth/user-not-found') {
-      showLoginError('Usuário não encontrado no sistema.');
+      showLoginError('UsuÃ¡rio nÃ£o encontrado no sistema.');
     } else if (error.code === 'auth/wrong-password') {
       showLoginError('Senha incorreta.');
     } else if (error.code === 'auth/invalid-email') {
-      showLoginError('Email inválido.');
+      showLoginError('Email invÃ¡lido.');
     } else if (error.code === 'auth/too-many-requests') {
       showLoginError('Muitas tentativas. Tente novamente mais tarde.');
     } else {
-      showLoginError('Usuário ou senha inválidos.');
+      showLoginError('UsuÃ¡rio ou senha invÃ¡lidos.');
     }
   } finally {
     setButtonLoading(loginBtn, false);
@@ -794,7 +474,7 @@ function setupNewEntry() {
     form.addEventListener('submit', handleNewEntry);
   }
 
-  // Auto-preencher assunto pelo número
+  // Auto-preencher assunto pelo nÃºmero
   if (subjectNumber && subjectSelect) {
     subjectNumber.addEventListener('input', function() {
       const num = parseInt(this.value);
@@ -806,7 +486,7 @@ function setupNewEntry() {
       }
     });
 
-    // Sincronizar select com número
+    // Sincronizar select com nÃºmero
     subjectSelect.addEventListener('change', function() {
       if (this.value) {
         subjectNumber.value = this.value;
@@ -814,11 +494,11 @@ function setupNewEntry() {
     });
   }
 
-  // NOVA FUNCIONALIDADE: Autopreenchimento baseado no número do processo
+  // NOVA FUNCIONALIDADE: Autopreenchimento baseado no nÃºmero do processo
   if(processNumberInput && contributorInput && ctmInput) {
 	processNumberInput.addEventListener('input', async function () {
    	let numeroProcesso = this.value.trim();
-   	numeroProcesso = numeroProcesso.replace(/\//g, "-"); // <-- só aqui!
+   	numeroProcesso = numeroProcesso.replace(/\//g, "-"); // <-- sÃ³ aqui!
    	if (!numeroProcesso) {
      		contributorInput.value = '';
       		ctmInput.value = '';
@@ -854,7 +534,7 @@ async function handleNewEntry(e) {
   const form = e.target;
   const submitBtn = form.querySelector('button[type="submit"]');
 
-  // Coletar dados do formulário
+  // Coletar dados do formulÃ¡rio
   const subjectId = parseInt(document.getElementById('subject-select').value);
   const processNumber = document.getElementById('process-number').value.trim();
 
@@ -864,7 +544,7 @@ async function handleNewEntry(e) {
   }
 
   if (!processNumber) {
-    alert('Por favor, informe o número do processo.');
+    alert('Por favor, informe o nÃºmero do processo.');
     return;
   }
 
@@ -895,13 +575,13 @@ async function handleNewEntry(e) {
       await push(entriesRef, entry);
       console.log('Entrada salva no Firebase:', entry);
     } else {
-      // Salvar localmente se Firebase não estiver disponível
+      // Salvar localmente se Firebase nÃ£o estiver disponÃ­vel
       entry.id = 'local_' + Date.now();
       allEntries.unshift(entry);
       console.log('Entrada salva localmente:', entry);
     }
 
-    // Limpar formulário
+    // Limpar formulÃ¡rio
     form.reset();
     document.getElementById('subject-number').value = '';
 
@@ -916,7 +596,7 @@ async function handleNewEntry(e) {
   }
 }
 
-// Múltiplas entradas
+// MÃºltiplas entradas
 function setupMultipleEntries() {
   const setSubjectBtn = document.getElementById('set-subject-btn');
   const addProcessBtn = document.getElementById('add-process-btn');
@@ -936,7 +616,7 @@ function setupMultipleEntries() {
     saveAllBtn.addEventListener('click', handleSaveAllEntries);
   }
 
-  // Auto-preencher assunto pelo número
+  // Auto-preencher assunto pelo nÃºmero
   if (multiSubjectNumber && multiSubjectSelect) {
     multiSubjectNumber.addEventListener('input', function() {
       const num = parseInt(this.value);
@@ -948,7 +628,7 @@ function setupMultipleEntries() {
       }
     });
 
-    // Sincronizar select com número
+    // Sincronizar select com nÃºmero
     multiSubjectSelect.addEventListener('change', function() {
       if (this.value) {
         multiSubjectNumber.value = this.value;
@@ -967,28 +647,15 @@ function handleSetSubject() {
   const assunto = GLUOS_DATA.assuntos.find(a => a.id === subjectId);
   selectedSubjectForMultiple = assunto;
 
-    // Atualiza o texto do assunto selecionado
-    const subjectText = document.getElementById('selected-subject-text');
-    if (assunto && subjectText) {
-        subjectText.textContent = assunto.texto;
-    }
+  // Mostrar seÃ§Ã£o de formulÃ¡rios
+  const container = document.getElementById('multiple-forms-container');
+  const subjectText = document.getElementById('selected-subject-text');
 
-    // Mostra o container e reseta processos antigos
-    const container = document.getElementById('multiple-forms-container');
-    if (container) {
-        container.classList.remove('hidden');
-    }
-    document.getElementById('processes-container').innerHTML = '';
-    processCounter = 1;
+  if (container && subjectText && assunto) {
+    subjectText.textContent = assunto.texto;
+    container.classList.remove('hidden');
 
-    // NOVO: pega quantidade desejada
-    const qty = parseInt(document.getElementById('multi-process-qty').value) || 1;
-
-    // Cria N process forms dinâmicos
-    for (let i = 0; i < qty; i++) {
-        addProcessForm();
-
-    // Limpar formulários anteriores e adicionar o primeiro
+    // Limpar formulÃ¡rios anteriores e adicionar o primeiro
     document.getElementById('processes-container').innerHTML = '';
     processCounter = 1;
     addProcessForm();
@@ -1010,8 +677,8 @@ function addProcessForm() {
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Nº Processo/Protocolo: *</label>
-                    <input type="text" class="form-control process-number" placeholder="informe número do processo ou protocolo, ou digite 0" required>
+                    <label class="form-label">NÂº Processo/Protocolo: *</label>
+                    <input type="text" class="form-control process-number" placeholder="informe nÃºmero do processo ou protocolo, ou digite 0" required>
                 </div>
                 
                 <div class="form-group">
@@ -1025,22 +692,22 @@ function addProcessForm() {
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Observação:</label>
-                    <textarea class="form-control process-observation" rows="3" placeholder="Observações"></textarea>
+                    <label class="form-label">ObservaÃ§Ã£o:</label>
+                    <textarea class="form-control process-observation" rows="3" placeholder="ObservaÃ§Ãµes"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Número do Habite-se/Alvará:</label>
-                    <input type="text" class="form-control process-habite" placeholder="Número do Habite-se/Alvará">
+                    <label class="form-label">NÃºmero do Habite-se/AlvarÃ¡:</label>
+                    <input type="text" class="form-control process-habite" placeholder="NÃºmero do Habite-se/AlvarÃ¡">
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Situação do Alvará de Funcionamento:</label>
+                    <label class="form-label">SituaÃ§Ã£o do AlvarÃ¡ de Funcionamento:</label>
                     <select class="form-control process-alvara">
                         <option value="">-- Selecione --</option>
                         <option value="Deferido">Deferido</option>
                         <option value="Indeferido">Indeferido</option>
-                        <option value="Em Análise">Em Análise</option>
+                        <option value="Em AnÃ¡lise">Em AnÃ¡lise</option>
                         <option value="Pendente">Pendente</option>
                     </select>
                 </div>
@@ -1080,11 +747,11 @@ async function handleSaveAllEntries() {
     const time = now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
     const timestamp = now.getTime();
     
-    // Coletar dados de todos os formulários
+    // Coletar dados de todos os formulÃ¡rios
     processForms.forEach(form => {
         const processNumber = form.querySelector('.process-number').value.trim();
         
-        if (processNumber) { // Só salvar se tiver número do processo
+        if (processNumber) { // SÃ³ salvar se tiver nÃºmero do processo
             const entry = {
                 subjectId: selectedSubjectForMultiple.id,
                 subjectText: selectedSubjectForMultiple.texto,
@@ -1104,7 +771,7 @@ async function handleSaveAllEntries() {
     });
     
     if (entries.length === 0) {
-        alert('Por favor, preencha pelo menos um número de processo.');
+        alert('Por favor, preencha pelo menos um nÃºmero de processo.');
         setButtonLoading(saveAllBtn, false);
         return;
     }
@@ -1154,7 +821,7 @@ function setupSearch() {
         });
     });
     
-    // Botão de pesquisar
+    // BotÃ£o de pesquisar
     const searchBtn = document.getElementById('search-submit');
     if (searchBtn) {
         searchBtn.addEventListener('click', handleSearch);
@@ -1162,7 +829,7 @@ function setupSearch() {
 }
 
 function switchSearchTab(tabName) {
-    // Atualizar botões
+    // Atualizar botÃµes
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -1188,7 +855,7 @@ async function handleSearch() {
         if (activeTab.id === 'process-search') {
             const processNumber = document.getElementById('search-process').value.trim();
             if (!processNumber) {
-                alert('Digite o número do processo.');
+                alert('Digite o nÃºmero do processo.');
                 return;
             }
             filteredEntries = allEntries.filter(entry => 
@@ -1348,16 +1015,16 @@ function clearDatabaseFilters() {
     loadDatabaseTable();
 }
 
-// Funções globais para editar/excluir
+// FunÃ§Ãµes globais para editar/excluir
 window.editEntry = function(entryId) {
     const entry = allEntries.find(e => e.id === entryId);
     if (!entry) {
-        alert('Entrada não encontrada.');
+        alert('Entrada nÃ£o encontrada.');
         return;
     }
     
     if (entry.server !== currentUser) {
-        alert('Você só pode editar suas próprias entradas.');
+        alert('VocÃª sÃ³ pode editar suas prÃ³prias entradas.');
         return;
     }
     
@@ -1367,12 +1034,12 @@ window.editEntry = function(entryId) {
 window.deleteEntry = async function(entryId) {
     const entry = allEntries.find(e => e.id === entryId);
     if (!entry) {
-        alert('Entrada não encontrada.');
+        alert('Entrada nÃ£o encontrada.');
         return;
     }
     
     if (entry.server !== currentUser) {
-        alert('Você só pode excluir suas próprias entradas.');
+        alert('VocÃª sÃ³ pode excluir suas prÃ³prias entradas.');
         return;
     }
     
@@ -1384,15 +1051,15 @@ window.deleteEntry = async function(entryId) {
         if (firebaseConnected && database && !entryId.startsWith('local_')) {
             const entryRef = ref(database, `gluos_entries/${entryId}`);
             await remove(entryRef);
-            console.log('Entrada excluída do Firebase:', entryId);
+            console.log('Entrada excluÃ­da do Firebase:', entryId);
         } else {
             // Remover localmente
             allEntries = allEntries.filter(e => e.id !== entryId);
             updateRecordCount();
-            console.log('Entrada excluída localmente:', entryId);
+            console.log('Entrada excluÃ­da localmente:', entryId);
         }
         
-        showSuccessModal('Entrada excluída com sucesso!');
+        showSuccessModal('Entrada excluÃ­da com sucesso!');
         
     } catch (error) {
         console.error('Erro ao excluir entrada:', error);
@@ -1400,7 +1067,7 @@ window.deleteEntry = async function(entryId) {
     }
 };
 
-// Relatórios
+// RelatÃ³rios
 function setupReports() {
     const personalBtn = document.getElementById('personal-report-btn');
     const completeBtn = document.getElementById('complete-report-btn');
@@ -1409,14 +1076,14 @@ function setupReports() {
     if (personalBtn) {
         personalBtn.addEventListener('click', () => {
             currentReportType = 'personal';
-            showReportForm('Relatório Pessoal');
+            showReportForm('RelatÃ³rio Pessoal');
         });
     }
     
     if (completeBtn) {
         completeBtn.addEventListener('click', () => {
             currentReportType = 'complete';
-            showReportForm('Relatório Completo');
+            showReportForm('RelatÃ³rio Completo');
         });
     }
     
@@ -1433,7 +1100,7 @@ function showReportForm(title) {
         formTitle.textContent = title;
         form.classList.remove('hidden');
         
-        // Definir datas padrão (mês atual)
+        // Definir datas padrÃ£o (mÃªs atual)
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
         
@@ -1455,7 +1122,7 @@ async function handleGenerateReport() {
     }
     
     if (new Date(startDate) > new Date(endDate)) {
-        alert('A data inicial não pode ser maior que a data final.');
+        alert('A data inicial nÃ£o pode ser maior que a data final.');
         return;
     }
     
@@ -1469,15 +1136,15 @@ async function handleGenerateReport() {
             generateCompleteReport(startDate, endDate);
         }
     } catch (error) {
-        console.error('Erro ao gerar relatório:', error);
-        alert('Erro ao gerar relatório. Tente novamente.');
+        console.error('Erro ao gerar relatÃ³rio:', error);
+        alert('Erro ao gerar relatÃ³rio. Tente novamente.');
     } finally {
         setButtonLoading(generateBtn, false);
     }
 }
 
 function generatePersonalReport(startDate, endDate) {
-    // Filtrar entradas do usuário atual no período
+    // Filtrar entradas do usuÃ¡rio atual no perÃ­odo
     const startTimestamp = new Date(startDate + 'T00:00:00').getTime();
     const endTimestamp = new Date(endDate + 'T23:59:59').getTime();
     
@@ -1512,18 +1179,18 @@ function generatePersonalReport(startDate, endDate) {
 }
 
 function displayPersonalReport(reportData, totalEntries, startDate, endDate) {
-    // Atualizar cabeçalho
+    // Atualizar cabeÃ§alho
     const reportTitle = document.getElementById('report-title');
     const reportMeta = document.getElementById('report-meta');
     
     if (reportTitle) {
-        reportTitle.textContent = 'Relatório Pessoal de Produtividade';
+        reportTitle.textContent = 'RelatÃ³rio Pessoal de Produtividade';
     }
     
     if (reportMeta) {
         reportMeta.innerHTML = `
-            <p><strong>Usuário:</strong> ${currentUser}</p>
-            <p><strong>Período:</strong> ${formatDateBR(startDate)} a ${formatDateBR(endDate)}</p>
+            <p><strong>UsuÃ¡rio:</strong> ${currentUser}</p>
+            <p><strong>PerÃ­odo:</strong> ${formatDateBR(startDate)} a ${formatDateBR(endDate)}</p>
             <p><strong>Total de Entradas:</strong> ${totalEntries}</p>
         `;
     }
@@ -1549,7 +1216,7 @@ function displayPersonalReport(reportData, totalEntries, startDate, endDate) {
         if (reportData.length === 0) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="3" class="text-center">Nenhum registro encontrado no período.</td>
+                    <td colspan="3" class="text-center">Nenhum registro encontrado no perÃ­odo.</td>
                 </tr>
             `;
         } else {
@@ -1575,7 +1242,7 @@ function displayPersonalReport(reportData, totalEntries, startDate, endDate) {
         `;
     }
     
-    // Calcular estatísticas adicionais
+    // Calcular estatÃ­sticas adicionais
     const summary = document.getElementById('summary-content');
     if (summary && totalEntries > 0) {
         const startTimestamp = new Date(startDate + 'T00:00:00').getTime();
@@ -1593,7 +1260,7 @@ function displayPersonalReport(reportData, totalEntries, startDate, endDate) {
         
         summary.innerHTML = `
             <p><strong>Dias com atividade:</strong> ${activeDays}</p>
-            <p><strong>Média diária:</strong> ${avgPerDay} entradas/dia</p>
+            <p><strong>MÃ©dia diÃ¡ria:</strong> ${avgPerDay} entradas/dia</p>
         `;
         
         document.getElementById('report-summary').classList.remove('hidden');
@@ -1606,7 +1273,7 @@ function displayPersonalReport(reportData, totalEntries, startDate, endDate) {
 }
 
 function generateCompleteReport(startDate, endDate) {
-    // Filtrar entradas no período
+    // Filtrar entradas no perÃ­odo
     const startTimestamp = new Date(startDate + 'T00:00:00').getTime();
     const endTimestamp = new Date(endDate + 'T23:59:59').getTime();
     
@@ -1614,7 +1281,7 @@ function generateCompleteReport(startDate, endDate) {
         return entry.timestamp >= startTimestamp && entry.timestamp <= endTimestamp;
     });
     
-    // Criar matriz: [assunto][usuário] = quantidade
+    // Criar matriz: [assunto][usuÃ¡rio] = quantidade
     const reportMatrix = {};
     const userTotals = {};
     const subjectTotals = {};
@@ -1667,23 +1334,23 @@ function generateCompleteReport(startDate, endDate) {
 }
 
 function displayCompleteReport(reportData, userTotals, grandTotal, startDate, endDate) {
-    // Atualizar cabeçalho
+    // Atualizar cabeÃ§alho
     const reportTitle = document.getElementById('report-title');
     const reportMeta = document.getElementById('report-meta');
     
     if (reportTitle) {
-        reportTitle.textContent = 'Relatório Completo de Produtividade';
+        reportTitle.textContent = 'RelatÃ³rio Completo de Produtividade';
     }
     
     if (reportMeta) {
         reportMeta.innerHTML = `
-            <p><strong>Período:</strong> ${formatDateBR(startDate)} a ${formatDateBR(endDate)}</p>
+            <p><strong>PerÃ­odo:</strong> ${formatDateBR(startDate)} a ${formatDateBR(endDate)}</p>
             <p><strong>Total de Entradas:</strong> ${grandTotal}</p>
-            <p><strong>Relatório gerado por:</strong> ${currentUser}</p>
+            <p><strong>RelatÃ³rio gerado por:</strong> ${currentUser}</p>
         `;
     }
     
-    // Criar cabeçalho da tabela
+    // Criar cabeÃ§alho da tabela
     const tableHead = document.getElementById('report-table-head');
     if (tableHead) {
         let headerHtml = '<tr><th style="text-align: left; min-width: 300px;">Assunto</th>';
@@ -1706,7 +1373,7 @@ function displayCompleteReport(reportData, userTotals, grandTotal, startDate, en
             const colspan = GLUOS_DATA.usuarios.length + 3;
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="${colspan}" class="text-center">Nenhum registro encontrado no período.</td>
+                    <td colspan="${colspan}" class="text-center">Nenhum registro encontrado no perÃ­odo.</td>
                 </tr>
             `;
         } else {
@@ -1729,7 +1396,7 @@ function displayCompleteReport(reportData, userTotals, grandTotal, startDate, en
         }
     }
     
-    // Rodapé da tabela (totais)
+    // RodapÃ© da tabela (totais)
     const tableFoot = document.getElementById('report-table-foot');
     if (tableFoot) {
         let footerHtml = '<tr style="background: var(--color-bg-6); font-weight: bold;"><th style="text-align: left;">TOTAL GERAL</th>';
@@ -1744,7 +1411,7 @@ function displayCompleteReport(reportData, userTotals, grandTotal, startDate, en
         tableFoot.innerHTML = footerHtml;
     }
     
-    // Aplicar classe específica para relatório administrativo
+    // Aplicar classe especÃ­fica para relatÃ³rio administrativo
     const reportTable = document.getElementById('report-table');
     if (reportTable) {
         reportTable.classList.add('admin-report-table');
@@ -1767,7 +1434,7 @@ function showProfileModal() {
     const modal = document.getElementById('profile-modal');
     const username = document.getElementById('profile-username');
     
-    if (username) username.textContent = currentUser || 'Usuário';
+    if (username) username.textContent = currentUser || 'UsuÃ¡rio';
     if (modal) modal.classList.remove('hidden');
 }
 
@@ -1785,7 +1452,7 @@ async function handlePasswordChange(e) {
     if (errorDiv) errorDiv.classList.add('hidden');
 
     if (newPassword !== confirmPassword) {
-        showPasswordError('As senhas não coincidem.');
+        showPasswordError('As senhas nÃ£o coincidem.');
         return;
     }
 
@@ -1799,11 +1466,11 @@ async function handlePasswordChange(e) {
     try {
         const user = auth.currentUser;
         if (!user || !user.email) {
-            showPasswordError('Usuário não autenticado.');
+            showPasswordError('UsuÃ¡rio nÃ£o autenticado.');
             return;
         }
 
-        // Reautenticar usuário
+        // Reautenticar usuÃ¡rio
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
         await reauthenticateWithCredential(user, credential);
 
@@ -1820,7 +1487,7 @@ async function handlePasswordChange(e) {
         if (error.code === 'auth/wrong-password') {
             showPasswordError('Senha atual incorreta.');
         } else if (error.code === 'auth/weak-password') {
-            showPasswordError('A nova senha é muito fraca.');
+            showPasswordError('A nova senha Ã© muito fraca.');
         } else {
             showPasswordError('Erro ao alterar senha. Tente novamente.');
         }
@@ -1834,7 +1501,7 @@ function hideProfileModal() {
     const modal = document.getElementById('profile-modal');
     if (modal) modal.classList.add('hidden');
     
-    // Limpar formulário
+    // Limpar formulÃ¡rio
     const form = document.getElementById('password-change-form');
     if (form) form.reset();
     
@@ -1870,7 +1537,7 @@ function setupModals() {
         });
     });
     
-    // Form de edição
+    // Form de ediÃ§Ã£o
     const editForm = document.getElementById('edit-entry-form');
     if (editForm) {
         editForm.addEventListener('submit', handleEditEntry);
@@ -1929,9 +1596,9 @@ async function handleEditEntry(e) {
         alvaraSituation: document.getElementById('edit-alvara-situation').value.trim()
     };
     
-    // Validação
+    // ValidaÃ§Ã£o
     if (!updatedEntry.subjectId || !updatedEntry.processNumber) {
-        alert('Por favor, preencha o assunto e o número do processo.');
+        alert('Por favor, preencha o assunto e o nÃºmero do processo.');
         return;
     }
     
@@ -1962,7 +1629,7 @@ async function handleEditEntry(e) {
     }
 }
 
-// Utilitários
+// UtilitÃ¡rios
 function populateSelectOptions() {
     // Assuntos
     const subjectSelects = [
@@ -1975,7 +1642,7 @@ function populateSelectOptions() {
     subjectSelects.forEach(selectId => {
         const select = document.getElementById(selectId);
         if (select) {
-            // Limpar opções existentes (exceto a primeira)
+            // Limpar opÃ§Ãµes existentes (exceto a primeira)
             while (select.children.length > 1) {
                 select.removeChild(select.lastChild);
             }
@@ -1999,12 +1666,12 @@ function populateSelectOptions() {
     serverSelects.forEach(selectId => {
         const select = document.getElementById(selectId);
         if (select) {
-            // Limpar opções existentes (exceto a primeira)
+            // Limpar opÃ§Ãµes existentes (exceto a primeira)
             while (select.children.length > 1) {
                 select.removeChild(select.lastChild);
             }
             
-            // Adicionar usuários
+            // Adicionar usuÃ¡rios
             GLUOS_DATA.usuarios.forEach(user => {
                 const option = document.createElement('option');
                 option.value = user;
@@ -2028,7 +1695,7 @@ function showScreen(screenName) {
     if (targetScreen) {
         targetScreen.classList.add('active');
         
-        // Esconder formulário de relatório ao voltar para tela de relatórios
+        // Esconder formulÃ¡rio de relatÃ³rio ao voltar para tela de relatÃ³rios
         if (screenName === 'report') {
             const reportForm = document.getElementById('report-form');
             const reportResults = document.getElementById('report-results');
@@ -2039,14 +1706,14 @@ function showScreen(screenName) {
             currentReportType = null;
         }
     } else {
-        console.error('Tela não encontrada:', screenName + '-screen');
+        console.error('Tela nÃ£o encontrada:', screenName + '-screen');
     }
 }
 
 function updateUserInfo() {
     const userInfo = document.getElementById('user-info');
     if (userInfo) {
-        userInfo.textContent = currentUser ? `Usuário: ${currentUser}` : 'Bem-vindo!';
+        userInfo.textContent = currentUser ? `UsuÃ¡rio: ${currentUser}` : 'Bem-vindo!';
     }
 }
 
@@ -2113,6 +1780,6 @@ function setButtonLoading(button, loading) {
     }
 }
 
-// NOTA: Este arquivo contém apenas as principais modificações.
-// Para o arquivo completo, você deve copiar todo o conteúdo do arquivo original
-// e substituir apenas as funções modificadas acima.
+// NOTA: Este arquivo contÃ©m apenas as principais modificaÃ§Ãµes.
+// Para o arquivo completo, vocÃª deve copiar todo o conteÃºdo do arquivo original
+// e substituir apenas as funÃ§Ãµes modificadas acima.
