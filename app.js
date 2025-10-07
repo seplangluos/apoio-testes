@@ -2054,3 +2054,4 @@ function setupPaginationEventListeners() {
 
     // Configurar paginação
     setupPaginationEventListeners();
+}
