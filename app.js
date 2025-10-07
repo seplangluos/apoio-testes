@@ -967,13 +967,26 @@ function handleSetSubject() {
   const assunto = GLUOS_DATA.assuntos.find(a => a.id === subjectId);
   selectedSubjectForMultiple = assunto;
 
-  // Mostrar seção de formulários
-  const container = document.getElementById('multiple-forms-container');
-  const subjectText = document.getElementById('selected-subject-text');
+    // Atualiza o texto do assunto selecionado
+    const subjectText = document.getElementById('selected-subject-text');
+    if (assunto && subjectText) {
+        subjectText.textContent = assunto.texto;
+    }
 
-  if (container && subjectText && assunto) {
-    subjectText.textContent = assunto.texto;
-    container.classList.remove('hidden');
+    // Mostra o container e reseta processos antigos
+    const container = document.getElementById('multiple-forms-container');
+    if (container) {
+        container.classList.remove('hidden');
+    }
+    document.getElementById('processes-container').innerHTML = '';
+    processCounter = 1;
+
+    // NOVO: pega quantidade desejada
+    const qty = parseInt(document.getElementById('multi-process-qty').value) || 1;
+
+    // Cria N process forms dinâmicos
+    for (let i = 0; i < qty; i++) {
+        addProcessForm();
 
     // Limpar formulários anteriores e adicionar o primeiro
     document.getElementById('processes-container').innerHTML = '';
