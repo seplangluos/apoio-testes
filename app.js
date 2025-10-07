@@ -599,7 +599,6 @@ async function handleNewEntry(e) {
 // Múltiplas entradas
 
 // Variáveis globais para múltiplas entradas
-let selectedSubjectForMultiple = null;
 let processInputsData = {}; // Para armazenar dados opcionais de cada processo
 let currentModalProcessIndex = null;
 
