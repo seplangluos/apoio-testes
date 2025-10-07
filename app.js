@@ -569,7 +569,7 @@ async function handleNewEntry(e) {
   setButtonLoading(submitBtn, true);
 
   try {
-    // Salvar no Firebase se conectado l
+    // Salvar no Firebase se conectado
     if (firebaseConnected && database) {
       const entriesRef = ref(database, 'gluos_entries');
       await push(entriesRef, entry);
