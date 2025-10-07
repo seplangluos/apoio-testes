@@ -597,42 +597,23 @@ async function handleNewEntry(e) {
 }
 
 // Múltiplas entradas
-
-// Variáveis globais para múltiplas entradas
-let processInputsData = {}; // Para armazenar dados opcionais de cada processo
-let currentModalProcessIndex = null;
-
-// Configurar múltiplas entradas
 function setupMultipleEntries() {
   const setSubjectBtn = document.getElementById('set-subject-btn');
-  const confirmQuantityBtn = document.getElementById('confirm-quantity-btn');
-  const saveMultipleBtn = document.getElementById('save-multiple-entries-btn');
+  const addProcessBtn = document.getElementById('add-process-btn');
+  const saveAllBtn = document.getElementById('save-all-btn');
   const multiSubjectNumber = document.getElementById('multi-subject-number');
   const multiSubjectSelect = document.getElementById('multi-subject-select');
-  const processQuantity = document.getElementById('process-quantity');
-
-  // Modal para campos opcionais
-  const saveOptionalBtn = document.getElementById('save-optional-fields-btn');
-  const cancelOptionalBtn = document.getElementById('cancel-optional-fields-btn');
 
   if (setSubjectBtn) {
     setSubjectBtn.addEventListener('click', handleSetSubject);
   }
 
-  if (confirmQuantityBtn) {
-    confirmQuantityBtn.addEventListener('click', handleConfirmQuantity);
+  if (addProcessBtn) {
+    addProcessBtn.addEventListener('click', addProcessForm);
   }
 
-  if (saveMultipleBtn) {
-    saveMultipleBtn.addEventListener('click', handleSaveMultipleEntries);
-  }
-
-  if (saveOptionalBtn) {
-    saveOptionalBtn.addEventListener('click', handleSaveOptionalFields);
-  }
-
-  if (cancelOptionalBtn) {
-    cancelOptionalBtn.addEventListener('click', hideOptionalFieldsModal);
+  if (saveAllBtn) {
+    saveAllBtn.addEventListener('click', handleSaveAllEntries);
   }
 
   // Auto-preencher assunto pelo número
@@ -640,7 +621,7 @@ function setupMultipleEntries() {
     multiSubjectNumber.addEventListener('input', function() {
       const num = parseInt(this.value);
       if (num >= 1 && num <= 47) {
-        const assunto = GLUOSDATA.assuntos.find(a => a.id === num);
+        const assunto = GLUOS_DATA.assuntos.find(a => a.id === num);
         if (assunto) {
           multiSubjectSelect.value = assunto.id;
         }
@@ -654,240 +635,97 @@ function setupMultipleEntries() {
       }
     });
   }
-
-  // Fechar modal ao clicar fora
-  const optionalModal = document.getElementById('optional-fields-modal');
-  if (optionalModal) {
-    optionalModal.addEventListener('click', function(e) {
-      if (e.target === this) {
-        hideOptionalFieldsModal();
-      }
-    });
-  }
 }
 
-function handleConfirmQuantity() {
-  const quantity = parseInt(document.getElementById('process-quantity').value);
-
-  if (!quantity || quantity < 1 || quantity > 10) {
-    alert('Por favor, selecione uma quantidade válida (1-10).');
+function handleSetSubject() {
+  const subjectId = parseInt(document.getElementById('multi-subject-select').value);
+  if (!subjectId) {
+    alert('Por favor, selecione um assunto.');
     return;
   }
 
-  // Limpar dados anteriores
-  processInputsData = {};
+  const assunto = GLUOS_DATA.assuntos.find(a => a.id === subjectId);
+  selectedSubjectForMultiple = assunto;
 
-  // Gerar os inputs de processo
-  generateProcessInputs(quantity);
-
-  // Atualizar texto do assunto selecionado
+  // Mostrar seção de formulários
+  const container = document.getElementById('multiple-forms-container');
   const subjectText = document.getElementById('selected-subject-text');
-  if (subjectText && selectedSubjectForMultiple) {
-    subjectText.textContent = selectedSubjectForMultiple.texto;
+
+  if (container && subjectText && assunto) {
+    subjectText.textContent = assunto.texto;
+    container.classList.remove('hidden');
+
+    // Limpar formulários anteriores e adicionar o primeiro
+    document.getElementById('processes-container').innerHTML = '';
+    processCounter = 1;
+    addProcessForm();
   }
-
-  // Mostrar próxima etapa
-  document.getElementById('quantity-selection-stage').classList.add('hidden');
-  document.getElementById('process-input-stage').classList.remove('hidden');
-
-  console.log('Quantidade confirmada:', quantity);
 }
 
-function generateProcessInputs(quantity) {
-  const container = document.getElementById('process-inputs-container');
-  if (!container) return;
-
-  container.innerHTML = '';
-
-  for (let i = 1; i <= quantity; i++) {
-    const inputGroup = document.createElement('div');
-    inputGroup.className = 'form-group process-input-group';
-    inputGroup.innerHTML = `
-      <label for="process-${i}" class="form-label">Processo ${i}:</label>
-      <div class="input-with-button">
-        <input type="text" 
-               id="process-${i}" 
-               class="form-control process-number-input" 
-               placeholder="Informe número do processo/protocolo"
-               data-index="${i}">
-        <button type="button" 
-                class="btn btn--secondary btn--small optional-fields-btn" 
-                data-index="${i}"
-                onclick="showOptionalFieldsModal(${i})">+</button>
-      </div>
+function addProcessForm() {
+    if (!selectedSubjectForMultiple) return;
+    
+    const container = document.getElementById('processes-container');
+    if (!container) return;
+    
+    const formHtml = `
+        <div class="process-form card" data-process="${processCounter}">
+            <div class="card__body">
+                <div class="process-form-header">
+                    <h4>Processo ${processCounter}</h4>
+                    <button type="button" class="remove-process-btn" onclick="removeProcessForm(${processCounter})">Remover</button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nº Processo/Protocolo: *</label>
+                    <input type="text" class="form-control process-number" placeholder="informe número do processo ou protocolo, ou digite 0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Contribuinte:</label>
+                    <input type="text" class="form-control process-contributor" placeholder="Nome do contribuinte">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">CTM:</label>
+                    <input type="text" class="form-control process-ctm" placeholder="CTM">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Observação:</label>
+                    <textarea class="form-control process-observation" rows="3" placeholder="Observações"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Número do Habite-se/Alvará:</label>
+                    <input type="text" class="form-control process-habite" placeholder="Número do Habite-se/Alvará">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Situação do Alvará de Funcionamento:</label>
+                    <select class="form-control process-alvara">
+                        <option value="">-- Selecione --</option>
+                        <option value="Deferido">Deferido</option>
+                        <option value="Indeferido">Indeferido</option>
+                        <option value="Em Análise">Em Análise</option>
+                        <option value="Pendente">Pendente</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     `;
-
-    container.appendChild(inputGroup);
-
-    // Inicializar dados vazios para este processo
-    processInputsData[i] = {
-      contributor: '',
-      ctm: '',
-      observation: '',
-      habiteNumber: '',
-      alvaraSituation: ''
-    };
-  }
-
-  console.log('Inputs gerados para', quantity, 'processos');
+    
+    container.insertAdjacentHTML('beforeend', formHtml);
+    processCounter++;
 }
 
-function showOptionalFieldsModal(processIndex) {
-  currentModalProcessIndex = processIndex;
-  const modal = document.getElementById('optional-fields-modal');
-  const modalProcessNumber = document.getElementById('modal-process-number');
-  const processInput = document.getElementById(`process-${processIndex}`);
-
-  // Atualizar título do modal
-  if (modalProcessNumber) {
-    const processNumber = processInput ? processInput.value.trim() : '';
-    modalProcessNumber.textContent = processNumber || processIndex;
-  }
-
-  // Preencher campos com dados salvos (se houver)
-  const data = processInputsData[processIndex] || {};
-  document.getElementById('modal-contributor').value = data.contributor || '';
-  document.getElementById('modal-ctm').value = data.ctm || '';
-  document.getElementById('modal-observation').value = data.observation || '';
-  document.getElementById('modal-habite-number').value = data.habiteNumber || '';
-  document.getElementById('modal-alvara-situation').value = data.alvaraSituation || '';
-
-  // Mostrar modal
-  if (modal) {
-    modal.classList.remove('hidden');
-  }
-}
-
-function hideOptionalFieldsModal() {
-  const modal = document.getElementById('optional-fields-modal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
-  currentModalProcessIndex = null;
-}
-
-function handleSaveOptionalFields() {
-  if (currentModalProcessIndex === null) return;
-
-  // Salvar dados do modal
-  processInputsData[currentModalProcessIndex] = {
-    contributor: document.getElementById('modal-contributor').value.trim(),
-    ctm: document.getElementById('modal-ctm').value.trim(),
-    observation: document.getElementById('modal-observation').value.trim(),
-    habiteNumber: document.getElementById('modal-habite-number').value.trim(),
-    alvaraSituation: document.getElementById('modal-alvara-situation').value.trim()
-  };
-
-  // Marcar visualmente o botão + se há dados preenchidos
-  const optionalBtn = document.querySelector(`button[data-index="${currentModalProcessIndex}"]`);
-  if (optionalBtn) {
-    const hasData = Object.values(processInputsData[currentModalProcessIndex]).some(value => value !== '');
-    optionalBtn.classList.toggle('btn--success', hasData);
-    optionalBtn.classList.toggle('btn--secondary', !hasData);
-  }
-
-  console.log('Dados opcionais salvos para processo', currentModalProcessIndex, processInputsData[currentModalProcessIndex]);
-
-  hideOptionalFieldsModal();
-}
-
-async function handleSaveMultipleEntries() {
-  if (!selectedSubjectForMultiple) {
-    alert('Nenhum assunto selecionado.');
-    return;
-  }
-
-  const saveBtn = document.getElementById('save-multiple-entries-btn');
-  setButtonLoading(saveBtn, true);
-
-  const processInputs = document.querySelectorAll('.process-number-input');
-  const entries = [];
-  const now = new Date();
-  const date = now.toLocaleDateString('pt-BR');
-  const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  const timestamp = now.getTime();
-
-  // Coletar dados de todos os processos preenchidos
-  processInputs.forEach((input, index) => {
-    const processNumber = input.value.trim();
-    if (processNumber) {
-      const processIndex = parseInt(input.dataset.index);
-      const optionalData = processInputsData[processIndex] || {};
-
-      const entry = {
-        subjectId: selectedSubjectForMultiple.id,
-        subjectText: selectedSubjectForMultiple.texto,
-        processNumber: processNumber,
-        contributor: optionalData.contributor || '',
-        ctm: optionalData.ctm || '',
-        observation: optionalData.observation || '',
-        habiteNumber: optionalData.habiteNumber || '',
-        alvaraSituation: optionalData.alvaraSituation || '',
-        server: currentUser,
-        date: date,
-        time: time,
-        timestamp: timestamp
-      };
-
-      entries.push(entry);
+window.removeProcessForm = function(processId) {
+    const form = document.querySelector(`[data-process="${processId}"]`);
+    if (form) {
+        form.remove();
     }
-  });
+};
 
-  if (entries.length === 0) {
-    alert('Por favor, preencha pelo menos um número de processo.');
-    setButtonLoading(saveBtn, false);
-    return;
-  }
-
-  try {
-    // Salvar entradas
-    if (firebaseConnected && database) {
-      const entriesRef = ref(database, 'gluos/entries');
-      const promises = entries.map(entry => push(entriesRef, entry));
-      await Promise.all(promises);
-      console.log(entries.length + ' entradas salvas no Firebase');
-    } else {
-      // Salvar localmente
-      entries.forEach((entry, index) => {
-        entry.id = 'local_' + Date.now() + '_' + index;
-        allEntries.unshift(entry);
-      });
-      console.log(entries.length + ' entradas salvas localmente');
-    }
-
-    // Limpar tudo e voltar ao início
-    resetMultipleEntriesForm();
-
-    showSuccessModal(`${entries.length} entradas salvas com sucesso!`);
-
-  } catch (error) {
-    console.error('Erro ao salvar entradas:', error);
-    alert('Erro ao salvar entradas. Tente novamente.');
-  } finally {
-    setButtonLoading(saveBtn, false);
-  }
-}
-
-function resetMultipleEntriesForm() {
-  // Resetar variáveis
-  selectedSubjectForMultiple = null;
-  processInputsData = {};
-  currentModalProcessIndex = null;
-
-  // Limpar formulários
-  document.getElementById('multi-subject-number').value = '';
-  document.getElementById('multi-subject-select').value = '';
-  document.getElementById('process-quantity').value = '';
-  document.getElementById('process-inputs-container').innerHTML = '';
-
-  // Mostrar apenas a primeira etapa
-  document.getElementById('subject-selection-stage').classList.remove('hidden');
-  document.getElementById('quantity-selection-stage').classList.add('hidden');
-  document.getElementById('process-input-stage').classList.add('hidden');
-
-  // Esconder modal se estiver aberto
-  hideOptionalFieldsModal();
-}
 async function handleSaveAllEntries() {
     if (!selectedSubjectForMultiple) {
         alert('Nenhum assunto selecionado.');
@@ -1096,55 +934,47 @@ function setupDatabase() {
     if (clearBtn) {
         clearBtn.addEventListener('click', clearDatabaseFilters);
     }
+    
+    // Configurar paginação
+    setupPaginationEventListeners();
+} {
+    const applyBtn = document.getElementById('apply-filters');
+    const clearBtn = document.getElementById('clear-filters');
+    
+    if (applyBtn) {
+        applyBtn.addEventListener('click', applyDatabaseFilters);
+    }
+    
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearDatabaseFilters);
+    }
 }
 
 function loadDatabaseTable(entries = null) {
-    const tableBody = document.querySelector('#database-table tbody');
-    const totalRecords = document.getElementById('total-records');
-    
-    if (!tableBody) return;
-    
     const entriesToShow = entries || allEntries;
-    
-    tableBody.innerHTML = '';
-    
+
+    // Atualizar contador total
+    const totalRecords = document.getElementById('total-records');
     if (totalRecords) {
         totalRecords.textContent = `${entriesToShow.length} registro(s)`;
     }
-    
+
+    // Se não há entradas, mostrar mensagem
     if (entriesToShow.length === 0) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="9" class="text-center">Nenhum registro encontrado.</td>
-            </tr>
-        `;
+        const tableBody = document.querySelector('#database-table tbody');
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center">Nenhum registro encontrado.</td>
+                </tr>
+            `;
+        }
+        hidePaginationControls();
         return;
     }
-    
-    entriesToShow.forEach(entry => {
-        const row = document.createElement('tr');
-        
-        const canEdit = entry.server === currentUser;
-        const actionsHtml = canEdit ? `
-            <div class="action-buttons">
-                <button class="btn--edit" onclick="editEntry('${entry.id}')">Editar</button>
-                <button class="btn--delete" onclick="deleteEntry('${entry.id}')">Excluir</button>
-            </div>
-        ` : '-';
-        
-        row.innerHTML = `
-            <td>${entry.date || '-'}</td>
-            <td>${entry.time || '-'}</td>
-            <td>${entry.server || '-'}</td>
-            <td>${entry.processNumber || '-'}</td>
-            <td title="${entry.subjectText || '-'}">${truncateText(entry.subjectText || '-', 30)}</td>
-            <td>${entry.contributor || '-'}</td>
-            <td>${entry.ctm || '-'}</td>
-            <td title="${entry.observation || '-'}">${truncateText(entry.observation || '-', 40)}</td>
-            <td>${actionsHtml}</td>
-        `;
-        tableBody.appendChild(row);
-    });
+
+    // Inicializar paginação
+    initializePagination(entriesToShow);
 }
 
 function applyDatabaseFilters() {
@@ -1945,3 +1775,283 @@ function setButtonLoading(button, loading) {
 // NOTA: Este arquivo contém apenas as principais modificações.
 // Para o arquivo completo, você deve copiar todo o conteúdo do arquivo original
 // e substituir apenas as funções modificadas acima.
+
+// ============================================
+// SISTEMA DE PAGINAÇÃO PARA BASE DE DADOS
+// ============================================
+
+// Variáveis globais da paginação
+let currentPage = 1;
+let itemsPerPage = 500;
+let currentEntries = [];
+let totalPages = 1;
+
+// Inicializar sistema de paginação
+function initializePagination(entries) {
+    currentEntries = entries;
+    currentPage = 1;
+    totalPages = Math.ceil(entries.length / itemsPerPage);
+
+    // Atualizar display
+    displayCurrentPage();
+    updatePaginationControls();
+    setupPaginationEventListeners();
+}
+
+// Exibir página atual
+function displayCurrentPage() {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageEntries = currentEntries.slice(startIndex, endIndex);
+
+    const tableBody = document.querySelector('#database-table tbody');
+    if (!tableBody) return;
+
+    // Limpar tabela
+    tableBody.innerHTML = '';
+
+    // Preencher com entradas da página atual
+    pageEntries.forEach(entry => {
+        const row = document.createElement('tr');
+
+        const canEdit = entry.server === currentUser;
+        const actionsHtml = canEdit ? `
+            <div class="action-buttons">
+                <button class="btn--edit" onclick="editEntry('${entry.id}')">Editar</button>
+                <button class="btn--delete" onclick="deleteEntry('${entry.id}')">Excluir</button>
+            </div>
+        ` : '-';
+
+        row.innerHTML = `
+            <td>${entry.date || '-'}</td>
+            <td>${entry.time || '-'}</td>
+            <td>${entry.server || '-'}</td>
+            <td>${entry.processNumber || '-'}</td>
+            <td title="${entry.subjectText || '-'}">${truncateText(entry.subjectText || '-', 30)}</td>
+            <td>${entry.contributor || '-'}</td>
+            <td>${entry.ctm || '-'}</td>
+            <td title="${entry.observation || '-'}">${truncateText(entry.observation || '-', 40)}</td>
+            <td>${actionsHtml}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    // Atualizar informações de paginação
+    updatePaginationInfo();
+}
+
+// Atualizar informações de paginação
+function updatePaginationInfo() {
+    const startIndex = (currentPage - 1) * itemsPerPage + 1;
+    const endIndex = Math.min(currentPage * itemsPerPage, currentEntries.length);
+    const totalEntries = currentEntries.length;
+
+    const infoText = `Mostrando ${startIndex}-${endIndex} de ${totalEntries} registros`;
+
+    // Atualizar ambos os elementos de informação (superior e inferior)
+    const infoElements = [
+        document.getElementById('pagination-info-text'),
+        document.getElementById('pagination-info-text-bottom')
+    ];
+
+    infoElements.forEach(element => {
+        if (element) {
+            element.textContent = infoText;
+        }
+    });
+}
+
+// Atualizar controles de paginação
+function updatePaginationControls() {
+    if (totalPages <= 1) {
+        hidePaginationControls();
+        return;
+    }
+
+    showPaginationControls();
+
+    // Atualizar botões de navegação
+    updateNavigationButtons();
+
+    // Atualizar números das páginas
+    updatePageNumbers();
+}
+
+// Mostrar controles de paginação
+function showPaginationControls() {
+    const containers = document.querySelectorAll('.pagination-container');
+    containers.forEach(container => {
+        if (container) {
+            container.style.display = 'flex';
+        }
+    });
+}
+
+// Esconder controles de paginação
+function hidePaginationControls() {
+    const containers = document.querySelectorAll('.pagination-container');
+    containers.forEach(container => {
+        if (container) {
+            container.style.display = 'none';
+        }
+    });
+}
+
+// Atualizar botões de navegação
+function updateNavigationButtons() {
+    const navigationButtons = [
+        { ids: ['first-page-btn', 'first-page-btn-bottom'], condition: currentPage === 1 },
+        { ids: ['prev-page-btn', 'prev-page-btn-bottom'], condition: currentPage === 1 },
+        { ids: ['next-page-btn', 'next-page-btn-bottom'], condition: currentPage === totalPages },
+        { ids: ['last-page-btn', 'last-page-btn-bottom'], condition: currentPage === totalPages }
+    ];
+
+    navigationButtons.forEach(buttonGroup => {
+        buttonGroup.ids.forEach(id => {
+            const button = document.getElementById(id);
+            if (button) {
+                button.disabled = buttonGroup.condition;
+            }
+        });
+    });
+}
+
+// Atualizar números das páginas
+function updatePageNumbers() {
+    const pageNumberContainers = [
+        document.getElementById('page-numbers-top'),
+        document.getElementById('page-numbers-bottom')
+    ];
+
+    pageNumberContainers.forEach(container => {
+        if (container) {
+            container.innerHTML = generatePageNumbers();
+        }
+    });
+}
+
+// Gerar HTML dos números das páginas
+function generatePageNumbers() {
+    let html = '';
+
+    // Mostrar páginas 1-15, depois reticências e botões de navegação
+    const maxVisiblePages = 15;
+
+    if (totalPages <= maxVisiblePages) {
+        // Mostrar todas as páginas se forem 15 ou menos
+        for (let i = 1; i <= totalPages; i++) {
+            html += createPageButton(i);
+        }
+    } else {
+        // Lógica mais complexa para muitas páginas
+        if (currentPage <= 10) {
+            // Início: mostrar 1-15
+            for (let i = 1; i <= 15; i++) {
+                html += createPageButton(i);
+            }
+            if (totalPages > 15) {
+                html += '<span class="pagination-ellipsis">...</span>';
+            }
+        } else if (currentPage > totalPages - 10) {
+            // Fim: mostrar últimas 15 páginas
+            if (totalPages > 15) {
+                html += '<span class="pagination-ellipsis">...</span>';
+            }
+            for (let i = Math.max(1, totalPages - 14); i <= totalPages; i++) {
+                html += createPageButton(i);
+            }
+        } else {
+            // Meio: mostrar contexto ao redor da página atual
+            html += createPageButton(1);
+            html += '<span class="pagination-ellipsis">...</span>';
+
+            const start = Math.max(2, currentPage - 7);
+            const end = Math.min(totalPages - 1, currentPage + 7);
+
+            for (let i = start; i <= end; i++) {
+                html += createPageButton(i);
+            }
+
+            html += '<span class="pagination-ellipsis">...</span>';
+            html += createPageButton(totalPages);
+        }
+    }
+
+    return html;
+}
+
+// Criar botão de página
+function createPageButton(pageNumber) {
+    const isActive = pageNumber === currentPage;
+    const activeClass = isActive ? ' active' : '';
+
+    return `<button class="page-number-btn${activeClass}" onclick="goToPage(${pageNumber})">${pageNumber}</button>`;
+}
+
+// Navegar para página específica
+function goToPage(pageNumber) {
+    if (pageNumber < 1 || pageNumber > totalPages || pageNumber === currentPage) {
+        return;
+    }
+
+    currentPage = pageNumber;
+    displayCurrentPage();
+    updatePaginationControls();
+
+    // Scroll para o topo da tabela
+    const tableContainer = document.querySelector('.table-container');
+    if (tableContainer) {
+        tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Navegação por botões
+function goToFirstPage() {
+    goToPage(1);
+}
+
+function goToPrevPage() {
+    goToPage(currentPage - 1);
+}
+
+function goToNextPage() {
+    goToPage(currentPage + 1);
+}
+
+function goToLastPage() {
+    goToPage(totalPages);
+}
+
+// Configurar event listeners da paginação
+function setupPaginationEventListeners() {
+    // Botões primeira/última/anterior/próxima (superior e inferior)
+    const paginationButtons = [
+        { ids: ['first-page-btn', 'first-page-btn-bottom'], handler: goToFirstPage },
+        { ids: ['prev-page-btn', 'prev-page-btn-bottom'], handler: goToPrevPage },
+        { ids: ['next-page-btn', 'next-page-btn-bottom'], handler: goToNextPage },
+        { ids: ['last-page-btn', 'last-page-btn-bottom'], handler: goToLastPage }
+    ];
+
+    paginationButtons.forEach(buttonGroup => {
+        buttonGroup.ids.forEach(id => {
+            const button = document.getElementById(id);
+            if (button) {
+                // Remover listeners antigos
+                button.removeEventListener('click', buttonGroup.handler);
+                // Adicionar novo listener
+                button.addEventListener('click', buttonGroup.handler);
+            }
+        });
+    });
+}
+
+// Modificar a função setupDatabase para incluir a paginação
+
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearDatabaseFilters);
+    }
+
+    // Configurar paginação
+    setupPaginationEventListeners();
+}
