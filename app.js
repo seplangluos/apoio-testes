@@ -279,10 +279,330 @@ function setupEventListeners() {
   // Nova entrada
   setupNewEntry();
   
-  // Múltiplas entradas
-  setupMultipleEntries();
   
-  // Pesquisa
+// Múltiplas entradas - Nova implementação
+function setupMultipleEntries() {
+    // Botões de navegação entre etapas
+    const confirmSubjectBtn = document.getElementById('confirm-subject-btn');
+    const confirmQuantityBtn = document.getElementById('confirm-quantity-btn');
+    const backToSubjectBtn = document.getElementById('back-to-subject-btn');
+    const backToQuantityBtn = document.getElementById('back-to-quantity-btn');
+    const saveAllProcessesBtn = document.getElementById('save-all-processes-btn');
+
+    // Campos de entrada
+    const multiSubjectNumber = document.getElementById('multi-subject-number');
+    const multiSubjectSelect = document.getElementById('multi-subject-select');
+    const quantitySelect = document.getElementById('quantity-select');
+
+    // Modal de campos adicionais
+    const additionalFieldsModal = document.getElementById('additional-fields-modal');
+    const saveAdditionalFieldsBtn = document.getElementById('save-additional-fields-btn');
+    const cancelAdditionalFieldsBtn = document.getElementById('cancel-additional-fields-btn');
+
+    // Variáveis globais para o fluxo
+    let selectedSubject = null;
+    let selectedQuantity = 0;
+    let currentProcessIndex = -1;
+    let processesData = {};
+
+    // Event listeners
+    if (confirmSubjectBtn) {
+        confirmSubjectBtn.addEventListener('click', handleConfirmSubject);
+    }
+
+    if (confirmQuantityBtn) {
+        confirmQuantityBtn.addEventListener('click', handleConfirmQuantity);
+    }
+
+    if (backToSubjectBtn) {
+        backToSubjectBtn.addEventListener('click', () => showStep('subject'));
+    }
+
+    if (backToQuantityBtn) {
+        backToQuantityBtn.addEventListener('click', () => showStep('quantity'));
+    }
+
+    if (saveAllProcessesBtn) {
+        saveAllProcessesBtn.addEventListener('click', handleSaveAllProcesses);
+    }
+
+    // Modal de campos adicionais
+    if (saveAdditionalFieldsBtn) {
+        saveAdditionalFieldsBtn.addEventListener('click', handleSaveAdditionalFields);
+    }
+
+    if (cancelAdditionalFieldsBtn) {
+        cancelAdditionalFieldsBtn.addEventListener('click', hideAdditionalFieldsModal);
+    }
+
+    // Auto-preencher assunto pelo número
+    if (multiSubjectNumber && multiSubjectSelect) {
+        multiSubjectNumber.addEventListener('input', function() {
+            const num = parseInt(this.value);
+            if (num >= 1 && num <= 47) {
+                const assunto = GLUOSDATA.assuntos.find(a => a.id === num);
+                if (assunto) {
+                    multiSubjectSelect.value = assunto.id;
+                }
+            }
+        });
+
+        // Sincronizar select com número
+        multiSubjectSelect.addEventListener('change', function() {
+            if (this.value) {
+                multiSubjectNumber.value = this.value;
+            }
+        });
+    }
+
+    function handleConfirmSubject() {
+        const subjectId = parseInt(document.getElementById('multi-subject-select').value);
+
+        if (!subjectId) {
+            alert('Por favor, selecione um assunto.');
+            return;
+        }
+
+        const assunto = GLUOSDATA.assuntos.find(a => a.id === subjectId);
+        selectedSubject = assunto;
+
+        // Atualizar display do assunto
+        const selectedSubjectDisplay = document.getElementById('selected-subject-display');
+        if (selectedSubjectDisplay) {
+            selectedSubjectDisplay.textContent = `${assunto.id} - ${assunto.texto}`;
+        }
+
+        showStep('quantity');
+    }
+
+    function handleConfirmQuantity() {
+        const quantity = parseInt(document.getElementById('quantity-select').value);
+
+        if (!quantity || quantity < 1 || quantity > 10) {
+            alert('Por favor, selecione uma quantidade válida (1-10).');
+            return;
+        }
+
+        selectedQuantity = quantity;
+
+        // Atualizar displays
+        const finalSubjectDisplay = document.getElementById('final-subject-display');
+        const finalQuantityDisplay = document.getElementById('final-quantity-display');
+
+        if (finalSubjectDisplay) {
+            finalSubjectDisplay.textContent = `${selectedSubject.id} - ${selectedSubject.texto}`;
+        }
+
+        if (finalQuantityDisplay) {
+            finalQuantityDisplay.textContent = quantity;
+        }
+
+        // Criar as caixas de processo
+        createProcessBoxes(quantity);
+
+        showStep('processes');
+    }
+
+    function createProcessBoxes(quantity) {
+        const processesList = document.getElementById('processes-list');
+        if (!processesList) return;
+
+        processesList.innerHTML = '';
+        processesData = {};
+
+        for (let i = 1; i <= quantity; i++) {
+            const processBox = document.createElement('div');
+            processBox.className = 'process-box';
+            processBox.innerHTML = `
+                <div class="process-item">
+                    <label class="form-label">Processo ${i}:</label>
+                    <div class="process-input-group">
+                        <input type="text" id="process-${i}" class="form-control process-number-input" 
+                               placeholder="Informe número do processo/protocolo">
+                        <button type="button" class="btn btn--secondary btn--sm process-plus-btn" 
+                                onclick="openAdditionalFields(${i})">+</button>
+                    </div>
+                </div>
+            `;
+            processesList.appendChild(processBox);
+
+            // Inicializar dados do processo
+            processesData[i] = {
+                processNumber: '',
+                contributor: '',
+                ctm: '',
+                observation: '',
+                habiteNumber: '',
+                alvaraSituation: ''
+            };
+        }
+    }
+
+    function showStep(step) {
+        // Esconder todas as etapas
+        document.getElementById('subject-selection-step').classList.add('hidden');
+        document.getElementById('quantity-selection-step').classList.add('hidden');
+        document.getElementById('processes-input-step').classList.add('hidden');
+
+        // Mostrar a etapa atual
+        switch(step) {
+            case 'subject':
+                document.getElementById('subject-selection-step').classList.remove('hidden');
+                break;
+            case 'quantity':
+                document.getElementById('quantity-selection-step').classList.remove('hidden');
+                break;
+            case 'processes':
+                document.getElementById('processes-input-step').classList.remove('hidden');
+                break;
+        }
+    }
+
+    // Função global para abrir campos adicionais
+    window.openAdditionalFields = function(processIndex) {
+        currentProcessIndex = processIndex;
+
+        // Preencher modal com dados existentes
+        const data = processesData[processIndex] || {};
+        document.getElementById('additional-contributor').value = data.contributor || '';
+        document.getElementById('additional-ctm').value = data.ctm || '';
+        document.getElementById('additional-observation').value = data.observation || '';
+        document.getElementById('additional-habite-number').value = data.habiteNumber || '';
+        document.getElementById('additional-alvara-situation').value = data.alvaraSituation || '';
+
+        showAdditionalFieldsModal();
+    };
+
+    function showAdditionalFieldsModal() {
+        if (additionalFieldsModal) {
+            additionalFieldsModal.classList.remove('hidden');
+        }
+    }
+
+    function hideAdditionalFieldsModal() {
+        if (additionalFieldsModal) {
+            additionalFieldsModal.classList.add('hidden');
+        }
+        currentProcessIndex = -1;
+    }
+
+    function handleSaveAdditionalFields() {
+        if (currentProcessIndex === -1) return;
+
+        // Salvar dados do modal
+        processesData[currentProcessIndex] = {
+            ...processesData[currentProcessIndex],
+            contributor: document.getElementById('additional-contributor').value.trim(),
+            ctm: document.getElementById('additional-ctm').value.trim(),
+            observation: document.getElementById('additional-observation').value.trim(),
+            habiteNumber: document.getElementById('additional-habite-number').value.trim(),
+            alvaraSituation: document.getElementById('additional-alvara-situation').value.trim()
+        };
+
+        hideAdditionalFieldsModal();
+    }
+
+    async function handleSaveAllProcesses() {
+        if (!selectedSubject) {
+            alert('Nenhum assunto selecionado.');
+            return;
+        }
+
+        const saveBtn = document.getElementById('save-all-processes-btn');
+        setButtonLoading(saveBtn, true);
+
+        // Coletar números dos processos das caixas de texto
+        const validEntries = [];
+        const now = new Date();
+        const date = now.toLocaleDateString('pt-BR');
+        const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const timestamp = now.getTime();
+
+        for (let i = 1; i <= selectedQuantity; i++) {
+            const processInput = document.getElementById(`process-${i}`);
+            const processNumber = processInput ? processInput.value.trim() : '';
+
+            if (processNumber) {
+                // Atualizar dados do processo com o número digitado
+                processesData[i].processNumber = processNumber;
+
+                const entry = {
+                    subjectId: selectedSubject.id,
+                    subjectText: selectedSubject.texto,
+                    processNumber: processNumber,
+                    contributor: processesData[i].contributor || '',
+                    ctm: processesData[i].ctm || '',
+                    observation: processesData[i].observation || '',
+                    habiteNumber: processesData[i].habiteNumber || '',
+                    alvaraSituation: processesData[i].alvaraSituation || '',
+                    server: currentUser,
+                    date: date,
+                    time: time,
+                    timestamp: timestamp
+                };
+
+                validEntries.push(entry);
+            }
+        }
+
+        if (validEntries.length === 0) {
+            alert('Por favor, preencha pelo menos um número de processo.');
+            setButtonLoading(saveBtn, false);
+            return;
+        }
+
+        try {
+            // Salvar entradas
+            if (firebaseConnected && database) {
+                const entriesRef = ref(database, 'gluos/entries');
+                const promises = validEntries.map(entry => push(entriesRef, entry));
+                await Promise.all(promises);
+                console.log(`${validEntries.length} entradas salvas no Firebase`);
+            } else {
+                // Salvar localmente
+                validEntries.forEach((entry, index) => {
+                    entry.id = `local_${Date.now()}_${index}`;
+                    allEntries.unshift(entry);
+                });
+                console.log(`${validEntries.length} entradas salvas localmente`);
+            }
+
+            // Resetar formulário
+            resetMultipleEntriesForm();
+
+            // Mostrar mensagem de sucesso
+            showSuccessModal(`Salvo ${validEntries.length} entrada${validEntries.length > 1 ? 's' : ''} com sucesso!`);
+
+        } catch (error) {
+            console.error('Erro ao salvar entradas:', error);
+            alert('Erro ao salvar entradas. Tente novamente.');
+        } finally {
+            setButtonLoading(saveBtn, false);
+        }
+    }
+
+    function resetMultipleEntriesForm() {
+        // Resetar variáveis
+        selectedSubject = null;
+        selectedQuantity = 0;
+        currentProcessIndex = -1;
+        processesData = {};
+
+        // Limpar campos
+        document.getElementById('multi-subject-number').value = '';
+        document.getElementById('multi-subject-select').value = '';
+        document.getElementById('quantity-select').value = '';
+        document.getElementById('processes-list').innerHTML = '';
+
+        // Voltar para primeira etapa
+        showStep('subject');
+    }
+
+    // Inicializar na primeira etapa
+    showStep('subject');
+}
+
+// Pesquisa
   setupSearch();
   
   // Base de dados
@@ -662,218 +982,61 @@ function handleSetSubject() {
   }
 }
 
-// Nova função para lidar com a mudança de quantidade
-function handleQuantityChange() {
-    const quantitySelect = document.getElementById('quantity-select');
-    const saveAllBtn = document.getElementById('save-all-btn');
-    const container = document.getElementById('processes-container');
-
-    if (!quantitySelect || !container || !selectedSubjectForMultiple) return;
-
-    const quantity = parseInt(quantitySelect.value);
-
-    if (!quantity) {
-        container.innerHTML = '';
-        if (saveAllBtn) saveAllBtn.style.display = 'none';
-        return;
-    }
-
-    // Limpar container anterior
-    container.innerHTML = '';
-
-    // Criar os campos para a quantidade selecionada
-    for (let i = 1; i <= quantity; i++) {
-        createProcessRow(i);
-    }
-
-    // Mostrar botão salvar
-    if (saveAllBtn) {
-        saveAllBtn.style.display = 'block';
-    }
-
-    // Focar no primeiro campo
-    const firstInput = container.querySelector('input[data-process="1"]');
-    if (firstInput) {
-        firstInput.focus();
-    }
-}
-
-// Função para criar uma linha de processo
-function createProcessRow(processNumber) {
+function addProcessForm() {
+    if (!selectedSubjectForMultiple) return;
+    
     const container = document.getElementById('processes-container');
     if (!container) return;
-
-    const rowHtml = `
-        <div class="process-row" data-process="${processNumber}">
-            <div class="process-field">
-                <label><span class="process-number-label">${processNumber}.</span>Nº Processo *</label>
-                <input type="text" 
-                       data-process="${processNumber}" 
-                       data-field="process-number"
-                       class="form-control" 
-                       placeholder="Número do processo"
-                       required
-                       tabindex="${(processNumber - 1) * 3 + 1}">
-            </div>
-            <div class="process-field">
-                <label>Observação</label>
-                <textarea data-process="${processNumber}" 
-                          data-field="observation"
-                          class="form-control" 
-                          placeholder="Observações..."
-                          rows="2"
-                          tabindex="${(processNumber - 1) * 3 + 2}"></textarea>
-            </div>
-            <div class="process-field">
-                <button type="button" 
-                        class="extra-fields-btn" 
-                        data-process="${processNumber}"
-                        title="Campos adicionais"
-                        tabindex="${(processNumber - 1) * 3 + 3}"
-                        onclick="openExtraFieldsModal(${processNumber})">+</button>
+    
+    const formHtml = `
+        <div class="process-form card" data-process="${processCounter}">
+            <div class="card__body">
+                <div class="process-form-header">
+                    <h4>Processo ${processCounter}</h4>
+                    <button type="button" class="remove-process-btn" onclick="removeProcessForm(${processCounter})">Remover</button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nº Processo/Protocolo: *</label>
+                    <input type="text" class="form-control process-number" placeholder="informe número do processo ou protocolo, ou digite 0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Contribuinte:</label>
+                    <input type="text" class="form-control process-contributor" placeholder="Nome do contribuinte">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">CTM:</label>
+                    <input type="text" class="form-control process-ctm" placeholder="CTM">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Observação:</label>
+                    <textarea class="form-control process-observation" rows="3" placeholder="Observações"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Número do Habite-se/Alvará:</label>
+                    <input type="text" class="form-control process-habite" placeholder="Número do Habite-se/Alvará">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Situação do Alvará de Funcionamento:</label>
+                    <select class="form-control process-alvara">
+                        <option value="">-- Selecione --</option>
+                        <option value="Deferido">Deferido</option>
+                        <option value="Indeferido">Indeferido</option>
+                        <option value="Em Análise">Em Análise</option>
+                        <option value="Pendente">Pendente</option>
+                    </select>
+                </div>
             </div>
         </div>
     `;
-
-    container.insertAdjacentHTML('beforeend', rowHtml);
-
-    // Auto-preenchimento baseado no número do processo
-    const processInput = container.querySelector(`input[data-process="${processNumber}"][data-field="process-number"]`);
-    if (processInput) {
-        processInput.addEventListener('input', async function() {
-            await autoFillProcessData(this.value, processNumber);
-        });
-    }
-}
-
-// Variável global para armazenar dados extras
-let extraFieldsData = {};
-
-// Função para abrir modal de campos extras
-function openExtraFieldsModal(processNumber) {
-    const modal = document.getElementById('extra-fields-modal');
-    if (!modal) return;
-
-    // Carregar dados existentes se houver
-    const existingData = extraFieldsData[processNumber] || {};
-
-    document.getElementById('modal-contributor').value = existingData.contributor || '';
-    document.getElementById('modal-ctm').value = existingData.ctm || '';
-    document.getElementById('modal-habite-number').value = existingData.habiteNumber || '';
-    document.getElementById('modal-alvara-situation').value = existingData.alvaraSituation || '';
-
-    // Definir qual processo está sendo editado
-    modal.setAttribute('data-editing-process', processNumber);
-
-    // Mostrar modal
-    modal.style.display = 'flex';
-
-    // Focar no primeiro campo
-    document.getElementById('modal-contributor').focus();
-}
-
-// Função para configurar eventos do modal
-function setupExtraFieldsModal() {
-    const modal = document.getElementById('extra-fields-modal');
-    const closeBtn = document.getElementById('close-modal-btn');
-    const cancelBtn = document.getElementById('cancel-modal-btn');
-    const saveBtn = document.getElementById('save-extra-fields-btn');
-
-    if (!modal) return;
-
-    // Fechar modal
-    const closeModal = () => {
-        modal.style.display = 'none';
-        modal.removeAttribute('data-editing-process');
-    };
-
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-
-    // Fechar ao clicar fora
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    // Salvar campos extras
-    if (saveBtn) {
-        saveBtn.addEventListener('click', () => {
-            const processNumber = modal.getAttribute('data-editing-process');
-            if (!processNumber) return;
-
-            const data = {
-                contributor: document.getElementById('modal-contributor').value.trim(),
-                ctm: document.getElementById('modal-ctm').value.trim(),
-                habiteNumber: document.getElementById('modal-habite-number').value.trim(),
-                alvaraSituation: document.getElementById('modal-alvara-situation').value
-            };
-
-            // Salvar dados
-            extraFieldsData[processNumber] = data;
-
-            // Atualizar indicador visual do botão +
-            const btn = document.querySelector(`button[data-process="${processNumber}"]`);
-            if (btn) {
-                const hasData = Object.values(data).some(value => value !== '');
-                if (hasData) {
-                    btn.classList.add('filled');
-                    btn.title = 'Campos adicionais preenchidos';
-                } else {
-                    btn.classList.remove('filled');
-                    btn.title = 'Campos adicionais';
-                }
-            }
-
-            closeModal();
-        });
-    }
-
-    // Escape para fechar
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            closeModal();
-        }
-    });
-}
-
-// Auto-preenchimento baseado no número do processo
-async function autoFillProcessData(numeroProcesso, processNumber) {
-    if (!numeroProcesso.trim()) return;
-
-    // Normalizar número do processo
-    const numeroNormalizado = numeroProcesso.trim().replace(/\//g, "-");
-
-    try {
-        if (processosDatabase) {
-            const refProc = ref(processosDatabase, 'processos/' + numeroNormalizado);
-            const snapshot = await get(refProc);
-
-            if (snapshot.exists()) {
-                const dados = snapshot.val();
-
-                // Preencher automaticamente os campos extras
-                const extraData = {
-                    contributor: dados.Requerente || '',
-                    ctm: dados.CTM || '',
-                    habiteNumber: '',
-                    alvaraSituation: ''
-                };
-
-                extraFieldsData[processNumber] = extraData;
-
-                // Atualizar indicador visual se há dados
-                const btn = document.querySelector(`button[data-process="${processNumber}"]`);
-                if (btn && (extraData.contributor || extraData.ctm)) {
-                    btn.classList.add('filled');
-                    btn.title = 'Campos adicionais auto-preenchidos';
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Erro ao buscar dados do processo:', error);
-    }
+    
+    container.insertAdjacentHTML('beforeend', formHtml);
+    processCounter++;
 }
 
 window.removeProcessForm = function(processId) {
@@ -888,116 +1051,82 @@ async function handleSaveAllEntries() {
         alert('Nenhum assunto selecionado.');
         return;
     }
-
-    const processRows = document.querySelectorAll('.process-row');
-    if (processRows.length === 0) {
-        alert('Nenhum processo para salvar.');
+    
+    const processForms = document.querySelectorAll('.process-form');
+    if (processForms.length === 0) {
+        alert('Nenhum processo adicionado.');
         return;
     }
-
-    const saveBtn = document.getElementById('save-all-btn');
-
-    // Coletar dados de todos os processos
+    
+    const saveAllBtn = document.getElementById('save-all-btn');
+    setButtonLoading(saveAllBtn, true);
+    
     const entries = [];
-    let hasError = false;
-
-    processRows.forEach((row, index) => {
-        const processNumber = row.getAttribute('data-process');
-        const processInput = row.querySelector('input[data-field="process-number"]');
-        const observationTextarea = row.querySelector('textarea[data-field="observation"]');
-
-        if (!processInput || !processInput.value.trim()) {
-            alert(`Por favor, preencha o número do processo ${processNumber}.`);
-            processInput?.focus();
-            hasError = true;
-            return;
+    const now = new Date();
+    const date = now.toLocaleDateString('pt-BR');
+    const time = now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+    const timestamp = now.getTime();
+    
+    // Coletar dados de todos os formulários
+    processForms.forEach(form => {
+        const processNumber = form.querySelector('.process-number').value.trim();
+        
+        if (processNumber) { // Só salvar se tiver número do processo
+            const entry = {
+                subjectId: selectedSubjectForMultiple.id,
+                subjectText: selectedSubjectForMultiple.texto,
+                processNumber: processNumber,
+                contributor: form.querySelector('.process-contributor').value.trim(),
+                ctm: form.querySelector('.process-ctm').value.trim(),
+                observation: form.querySelector('.process-observation').value.trim(),
+                habiteNumber: form.querySelector('.process-habite').value.trim(),
+                alvaraSituation: form.querySelector('.process-alvara').value.trim(),
+                server: currentUser,
+                date: date,
+                time: time,
+                timestamp: timestamp
+            };
+            entries.push(entry);
         }
-
-        // Dados básicos
-        const now = new Date();
-        const entry = {
-            subjectId: selectedSubjectForMultiple.id,
-            subjectText: selectedSubjectForMultiple.texto,
-            processNumber: processInput.value.trim(),
-            observation: observationTextarea?.value.trim() || '',
-            server: currentUser,
-            date: now.toLocaleDateString('pt-BR'),
-            time: now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-            timestamp: now.getTime()
-        };
-
-        // Adicionar dados extras se existirem
-        const extraData = extraFieldsData[processNumber];
-        if (extraData) {
-            entry.contributor = extraData.contributor || '';
-            entry.ctm = extraData.ctm || '';
-            entry.habiteNumber = extraData.habiteNumber || '';
-            entry.alvaraSituation = extraData.alvaraSituation || '';
-        } else {
-            entry.contributor = '';
-            entry.ctm = '';
-            entry.habiteNumber = '';
-            entry.alvaraSituation = '';
-        }
-
-        entries.push(entry);
     });
-
-    if (hasError) {
+    
+    if (entries.length === 0) {
+        alert('Por favor, preencha pelo menos um número de processo.');
+        setButtonLoading(saveAllBtn, false);
         return;
     }
-
-    // Estado de loading
-    if (saveBtn) {
-        saveBtn.classList.add('btn--loading');
-        saveBtn.textContent = 'Salvando...';
-        saveBtn.disabled = true;
-    }
-
+    
     try {
-        // Salvar todas as entradas
-        for (const entry of entries) {
-            if (firebaseConnected && database) {
-                const entriesRef = ref(database, 'gluos_entries');
-                await push(entriesRef, entry);
-            } else {
-                // Salvar localmente se Firebase não estiver disponível
-                entry.id = 'local_' + Date.now() + '_' + Math.random();
+        // Salvar entradas
+        if (firebaseConnected && database) {
+            const entriesRef = ref(database, 'gluos_entries');
+            const promises = entries.map(entry => push(entriesRef, entry));
+            await Promise.all(promises);
+            console.log(`${entries.length} entradas salvas no Firebase`);
+        } else {
+            // Salvar localmente
+            entries.forEach((entry, index) => {
+                entry.id = 'local_' + (Date.now() + index);
                 allEntries.unshift(entry);
-            }
+            });
+            console.log(`${entries.length} entradas salvas localmente`);
         }
-
-        console.log(`${entries.length} entradas salvas com sucesso`);
-
-        // Limpar formulários
-        document.getElementById('processes-container').innerHTML = '';
-        document.getElementById('quantity-select').value = '';
-        extraFieldsData = {};
-
-        if (saveBtn) {
-            saveBtn.style.display = 'none';
-        }
-
-        // Resetar seleção de assunto
+        
+        // Limpar tudo
         selectedSubjectForMultiple = null;
         document.getElementById('multiple-forms-container').classList.add('hidden');
-        document.getElementById('multi-subject-select').value = '';
         document.getElementById('multi-subject-number').value = '';
-
-        // Mostrar sucesso
+        document.getElementById('multi-subject-select').value = '';
+        document.getElementById('processes-container').innerHTML = '';
+        processCounter = 1;
+        
         showSuccessModal(`${entries.length} entrada(s) salva(s) com sucesso!`);
-
+        
     } catch (error) {
         console.error('Erro ao salvar entradas:', error);
         alert('Erro ao salvar entradas. Tente novamente.');
-
     } finally {
-        // Remover estado de loading
-        if (saveBtn) {
-            saveBtn.classList.remove('btn--loading');
-            saveBtn.textContent = 'Salvar Todas as Entradas';
-            saveBtn.disabled = false;
-        }
+        setButtonLoading(saveAllBtn, false);
     }
 }
 

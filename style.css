@@ -1665,193 +1665,140 @@ textarea {
     background: var(--color-bg-6) !important;
 }
 
-/* ==============================================
-   ESTILOS PARA MODAL DE CAMPOS EXTRAS
-   ============================================== */
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
+/* Estilos para múltiplas entradas */
+.processes-list {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
 }
 
-.modal-content {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-    animation: modalSlideIn 0.3s ease-out;
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-50px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 25px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: 1.25rem;
-    color: #333;
-}
-
-.modal-body {
-    padding: 25px;
-}
-
-.form-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
-
-/* Estilos para os campos do processo múltiplo */
-.process-row {
-    display: flex;
-    align-items: end;
-    gap: 10px;
-    margin-bottom: 15px;
-    padding: 15px;
-    background: #f8f9fa;
+.process-box {
+    background: var(--color-bg-5);
+    border: 1px solid var(--color-border-2);
     border-radius: 8px;
-    border-left: 4px solid #4CAF50;
+    padding: 15px;
 }
 
-.process-field {
+.process-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.process-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.process-number-input {
     flex: 1;
 }
 
-.process-field label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 0.9rem;
-    color: #555;
-    font-weight: 500;
-}
-
-.process-field input, 
-.process-field textarea {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.2s ease;
-}
-
-.process-field input:focus, 
-.process-field textarea:focus {
-    border-color: #4CAF50;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
-}
-
-.process-field textarea {
-    resize: vertical;
-    min-height: 60px;
-}
-
-.extra-fields-btn {
-    background: #2196F3;
-    color: white;
-    border: none;
-    width: 35px;
-    height: 35px;
+.process-plus-btn {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 18px;
     font-weight: bold;
-    transition: all 0.2s ease;
-    margin-bottom: 0;
+    background: var(--color-secondary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
     flex-shrink: 0;
 }
 
-.extra-fields-btn:hover {
-    background: #1976D2;
+.process-plus-btn:hover {
+    background: var(--color-secondary-dark);
     transform: scale(1.05);
 }
 
-.extra-fields-btn:active {
-    transform: scale(0.95);
+.selected-subject-info,
+.selected-info {
+    background: var(--color-bg-6);
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--color-primary);
 }
 
-/* Indicador de campo preenchido */
-.extra-fields-btn.filled {
-    background: #FF9800;
+.selected-subject-info p,
+.selected-info p {
+    margin: 5px 0;
+    color: var(--color-text-2);
 }
 
-.extra-fields-btn.filled:hover {
-    background: #F57C00;
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-/* Numeração dos processos */
-.process-number-label {
+/* Modal para campos adicionais */
+#additional-fields-modal {
+    z-index: 1001;
+}
+
+#additional-fields-modal .modal-content {
+    max-width: 500px;
+    width: 90%;
+}
+
+#additional-fields-modal .form-group {
+    margin-bottom: 15px;
+}
+
+#additional-fields-modal .form-label {
     font-weight: 600;
-    color: #4CAF50;
-    margin-right: 5px;
+    color: var(--color-text-2);
+    margin-bottom: 5px;
+    display: block;
 }
 
-/* Responsividade para telas menores */
+/* Etapas de navegação */
+.hidden {
+    display: none !important;
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
-    .process-row {
+    .process-input-group {
         flex-direction: column;
-        gap: 15px;
+        align-items: stretch;
     }
 
-    .modal-content {
-        margin: 10px;
-        width: calc(100% - 20px);
-    }
-
-    .modal-header {
-        padding: 15px 20px;
-    }
-
-    .modal-body {
-        padding: 20px;
+    .process-plus-btn {
+        align-self: center;
+        margin-top: 10px;
     }
 
     .form-actions {
-        flex-direction: column-reverse;
+        margin-top: 20px;
     }
 
-    .form-actions button {
-        width: 100%;
-        margin: 0;
-        margin-bottom: 10px;
+    #additional-fields-modal .modal-content {
+        width: 95%;
+        margin: 10px;
     }
 }
 
-/* Animações de entrada para os campos de processo */
-.process-row {
-    animation: fadeInUp 0.3s ease-out;
+/* Animações suaves */
+.card {
+    transition: all 0.3s ease;
 }
 
-@keyframes fadeInUp {
+.card:not(.hidden) {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -1862,34 +1809,23 @@ textarea {
     }
 }
 
-/* Estado de loading para o botão salvar */
-.btn--loading {
-    position: relative;
-    pointer-events: none;
-    opacity: 0.7;
+/* Melhorias visuais */
+.btn--sm {
+    padding: 8px 12px;
+    font-size: 14px;
 }
 
-.btn--loading::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    margin: auto;
-    border: 2px solid transparent;
-    border-top-color: currentColor;
-    border-radius: 50%;
-    animation: button-loading-spinner 1s ease infinite;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+.process-box:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    transition: all 0.3s ease;
 }
 
-@keyframes button-loading-spinner {
-    from {
-        transform: rotate(0turn);
-    }
-    to {
-        transform: rotate(1turn);
-    }
+/* Indicadores visuais para campos preenchidos */
+.process-number-input:valid {
+    border-color: var(--color-success);
+}
+
+.process-number-input:invalid {
+    border-color: var(--color-error);
 }
