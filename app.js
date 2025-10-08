@@ -314,7 +314,7 @@ function setupMainNavigation() {
   const navButtons = [
     { id: 'new-entry-btn', screen: 'new-entry' },
     { id: 'multiple-entries-btn', screen: 'multiple-entries' },
-        { id: 'bulk-entries-btn', screen: 'bulk-entries-screen' },
+    { id: 'bulk-entries-btn', screen: 'bulk-entries' },
     { id: 'search-btn', screen: 'search' },
     { id: 'database-btn', screen: 'database', callback: loadDatabaseTable },
     { id: 'profile-btn', callback: showProfileModal },
