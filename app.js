@@ -2071,6 +2071,17 @@ function setupBulkEntries() {
     const bulkSubjectNumber = document.getElementById('bulk-subject-number');
     const bulkSubjectSelect = document.getElementById('bulk-subject-select');
 
+if (bulkSubjectSelect) {
+  // Limpa antes de popular
+  bulkSubjectSelect.innerHTML = '<option value="">Selecione um assunto...</option>';
+  GLUOS_DATA.assuntos.forEach(assunto => {
+    const opt = document.createElement('option');
+    opt.value = assunto.id;
+    opt.textContent = `${assunto.id} - ${assunto.texto}`;
+    bulkSubjectSelect.appendChild(opt);
+  });
+}
+
     if (generateBtn) {
         generateBtn.addEventListener('click', handleGenerateBulkForms);
     }
