@@ -316,8 +316,8 @@ function setupMainNavigation() {
   const navButtons = [
     { id: 'new-entry-btn', screen: 'new-entry' },
     { id: 'multiple-entries-btn', screen: 'multiple-entries' },
-    { id: 'bulk-entries-btn', screen: 'bulk-entries' },
-        { id: 'multi-subject-entries-btn', screen: 'multi-subject-entries' },
+    { id: 'bulk-entries-btn', screen: 'bulk-entries' },,
+        { id: 'multi-subject-entries-btn', screen: 'multi-subject-entries' }
     { id: 'search-btn', screen: 'search' },
     { id: 'database-btn', screen: 'database', callback: loadDatabaseTable },
     { id: 'profile-btn', callback: showProfileModal },
@@ -343,9 +343,9 @@ function setupMainNavigation() {
   const backButtons = [
     'back-to-dashboard-1', 'back-to-dashboard-2', 'back-to-dashboard-3', 
     'back-to-dashboard-4', 'back-to-dashboard-5',
-        'back-to-dashboard-6'
-
-        'back-to-dashboard-7',  ];
+        'back-to-dashboard-6',
+        'back-to-dashboard-7'
+  ];
   
   backButtons.forEach(btnId => {
     const btn = document.getElementById(btnId);
@@ -1636,7 +1636,12 @@ function populateSelectOptions() {
         'subject-select',
         'multi-subject-select',
         'edit-subject-select',
-        'filter-subject'
+        'filter-subject',
+        'subject1-select',
+        'subject2-select',
+        'subject3-select',
+        'subject4-select',
+        'subject5-select'
     ];
     
     subjectSelects.forEach(selectId => {
@@ -2391,6 +2396,30 @@ async function handleSaveAllBulkEntries() {
     }
 }
 
+// Resetar formulários
+function handleResetBulkForms() {
+    const container = document.getElementById('bulk-forms-container');
+    const processesContainer = document.getElementById('bulk-processes-container');
+
+    if (container) {
+        container.classList.add('hidden');
+    }
+
+    if (processesContainer) {
+        processesContainer.innerHTML = '';
+    }
+
+    // Limpar campos de seleção
+    document.getElementById('bulk-subject-number').value = '';
+    document.getElementById('bulk-subject-select').value = '';
+    document.getElementById('bulk-quantity').value = '5';
+
+    console.log('Formulários de entrada em massa resetados');
+}
+
+// ============================================================================
+// NOVO: VÁRIOS ASSUNTOS - Funcionalidades
+// ============================================================================
 
 // Setup para Novo: Vários assuntos
 function setupMultiSubjectEntries() {
@@ -2478,7 +2507,7 @@ function setupSubjectPair(index) {
 function populateMultiSubjectSelects() {
     for (let i = 1; i <= 5; i++) {
         const select = document.getElementById(`subject${i}-select`);
-        if (select && select.options.length <= 1) { // Se só tem a opção padrão
+        if (select && select.options.length <= 1) {
             // Limpar opções existentes exceto a primeira
             while (select.options.length > 1) {
                 select.removeChild(select.lastChild);
@@ -2591,25 +2620,4 @@ async function handleMultiSubjectSubmit(e) {
     } finally {
         setButtonLoading(submitBtn, false);
     }
-}
-
-// Resetar formulários
-function handleResetBulkForms() {
-    const container = document.getElementById('bulk-forms-container');
-    const processesContainer = document.getElementById('bulk-processes-container');
-
-    if (container) {
-        container.classList.add('hidden');
-    }
-
-    if (processesContainer) {
-        processesContainer.innerHTML = '';
-    }
-
-    // Limpar campos de seleção
-    document.getElementById('bulk-subject-number').value = '';
-    document.getElementById('bulk-subject-select').value = '';
-    document.getElementById('bulk-quantity').value = '5';
-
-    console.log('Formulários de entrada em massa resetados');
 }
