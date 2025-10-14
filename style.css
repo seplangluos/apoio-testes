@@ -2149,3 +2149,18 @@ textarea {
         padding: 8px;
     }
 }
+
+@media (prefers-color-scheme: dark) {
+  select,
+  select.form-control,
+  option {
+    background-color: var(--color-surface, #222);
+    color: var(--color-text, #f5f5f5);
+  }
+}
+[data-color-scheme="dark"] select,
+[data-color-scheme="dark"] select.form-control,
+[data-color-scheme="dark"] option {
+  background-color: var(--color-surface, #222);
+  color: var(--color-text, #f5f5f5);
+}
