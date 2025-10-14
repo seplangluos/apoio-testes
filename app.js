@@ -343,7 +343,7 @@ function setupMainNavigation() {
   const backButtons = [
     'back-to-dashboard-1', 'back-to-dashboard-2', 'back-to-dashboard-3', 
     'back-to-dashboard-4', 'back-to-dashboard-5',
-        'back-to-dashboard-6'
+        'back-to-dashboard-6',
 
         'back-to-dashboard-7',  ];
   
