@@ -1999,6 +1999,7 @@ textarea {
     resize: vertical;
 }
 
+
 /* ============================================================================ */
 /* NOVO: VÁRIOS ASSUNTOS - Estilos específicos */
 /* ============================================================================ */
@@ -2147,4 +2148,106 @@ textarea {
         font-size: 0.85rem;
         padding: 8px;
     }
+}
+
+/* Variáveis globais de cor e ícones */
+:root {
+  --color-text: #262828;
+  --color-surface: #f9f9fb;
+  --color-border: #ccd0d5;
+  --select-caret-light: url('data:image/svg+xml;utf8,<svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4" stroke="%23555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  --select-caret-dark: url('data:image/svg+xml;utf8,<svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4" stroke="%23f5f5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+}
+
+/* Modo escuro por prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-text: #f5f5f5;
+    --color-surface: #262828;
+    --color-border: #444;
+  }
+}
+
+/* Modo escuro por atributo (ex: data-color-scheme="dark" no HTML/body) */
+[data-color-scheme="dark"] {
+  --color-text: #f5f5f5;
+  --color-surface: #262828;
+  --color-border: #444;
+}
+
+/* Estilo base para inputs, selects, textareas */
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="number"],
+select,
+textarea {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  transition: border-color 150ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+/* Select customizado com ícone caret */
+select,
+select.form-control {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: var(--select-caret-light);
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  padding-right: 38px;
+}
+
+@media (prefers-color-scheme: dark) {
+  select,
+  select.form-control {
+    background-image: var(--select-caret-dark);
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+  }
+}
+[data-color-scheme="dark"] select,
+[data-color-scheme="dark"] select.form-control {
+  background-image: var(--select-caret-dark);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+/* Label e título harmonizados */
+label {
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--color-text);
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Placeholder também com contraste */
+input::placeholder,
+textarea::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  input::placeholder,
+  textarea::placeholder {
+    color: #bbb;
+  }
+}
+[data-color-scheme="dark"] input::placeholder,
+[data-color-scheme="dark"] textarea::placeholder {
+  color: #bbb;
 }
