@@ -1468,18 +1468,19 @@ display: block;
 
 /* Tela de Login */
 .login-container {
-min-height: 100vh;
-display: flex;
-align-items: center;
-justify-content: center;
-background: var(--color-bg-1);
-padding: var(--space-20);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url('bg.png') no-repeat center center;
+  background-size: cover;
+  position: relative;
+  /* Se quiser um overlay escurecido, adicione antes do .login-card um extra opcional */
 }
 
 .login-card {
-width: 100%;
-max-width: 400px;
-text-align: center;
+  background: rgba(255,255,255,0.35);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.90);
 }
 
 .login-title {
@@ -1527,6 +1528,14 @@ background: var(--color-surface);
 border-bottom: 1px solid var(--color-border);
 padding: var(--space-20) 0;
 margin-bottom: var(--space-32);
+}
+
+#dashboard-screen {
+  min-height: 100vh;
+  background: url('bg.png') no-repeat center center;
+  background-size: cover;
+  /* Para garantir que cubra toda a área e não repita */
+  position: relative;
 }
 
 .header-content {
