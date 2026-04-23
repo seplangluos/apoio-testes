@@ -118,7 +118,10 @@ const GLUOS_DATA = {
     {id: 44, texto: "Montagem de Processo Novo"},
     {id: 45, texto: "Encaminhamento para indeferimento"},
     {id: 46, texto: "Protocolo de informação Básica"},
-    {id: 47, texto: "Agendamento para contribuinte"}
+    {id: 47, texto: "Agendamento para contribuinte"},
+    {id: 48, texto: "Viabilidade Pessoa Física"},
+    {id: 49, texto: "Licenciamento (GV)"},
+    {id: 50, texto: "Situação Imóvel"},
   ]
 };
 
