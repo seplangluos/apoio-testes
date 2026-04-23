@@ -489,7 +489,7 @@ function setupNewEntry() {
   if (subjectNumber && subjectSelect) {
     subjectNumber.addEventListener('input', function() {
       const num = parseInt(this.value);
-      if (num >= 1 && num <= 47) {
+      if (num >= 1 && num <= 50) {
         const assunto = GLUOS_DATA.assuntos.find(a => a.id === num);
         if (assunto) {
           subjectSelect.value = assunto.id;
@@ -631,7 +631,7 @@ function setupMultipleEntries() {
   if (multiSubjectNumber && multiSubjectSelect) {
     multiSubjectNumber.addEventListener('input', function() {
       const num = parseInt(this.value);
-      if (num >= 1 && num <= 47) {
+      if (num >= 1 && num <= 50) {
         const assunto = GLUOS_DATA.assuntos.find(a => a.id === num);
         if (assunto) {
           multiSubjectSelect.value = assunto.id;
@@ -2113,7 +2113,7 @@ if (bulkSubjectSelect) {
     if (bulkSubjectNumber && bulkSubjectSelect) {
         bulkSubjectNumber.addEventListener('input', function() {
             const num = parseInt(this.value);
-            if (num >= 1 && num <= 47) {
+            if (num >= 1 && num <= 50) {
                 const assunto = GLUOS_DATA.assuntos.find(a => a.id === num);
                 if (assunto) {
                     bulkSubjectSelect.value = assunto.id;
@@ -2489,7 +2489,7 @@ function setupSubjectPair(index) {
         // Quando o ID é digitado, atualizar o select
         idInput.addEventListener('input', function() {
             const num = parseInt(this.value);
-            if (num >= 1 && num <= 47) {
+            if (num >= 1 && num <= 50) {
                 const assunto = GLUOS_DATA.assuntos.find(a => a.id === num);
                 if (assunto) {
                     selectInput.value = assunto.id;
