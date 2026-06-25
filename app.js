@@ -1113,7 +1113,6 @@ window.showDetailModal = function(entryId) {
     if (generateBtn) {
         generateBtn.addEventListener('click', handleGenerateReport);
     }
-}
 
 function showReportForm(title) {
     const form = document.getElementById('report-form');
