@@ -569,6 +569,7 @@ async function handleNewEntry(e) {
     contributor: document.getElementById('contributor').value.trim(),
     ctm: document.getElementById('ctm').value.trim(),
     observation: document.getElementById('observation').value.trim(),
+    notification: document.getElementById('notification').value.trim(),
     habiteNumber: document.getElementById('habite-number').value.trim(),
     alvaraSituation: document.getElementById('alvara-situation').value.trim(),
     server: currentUser,
@@ -708,6 +709,11 @@ function addProcessForm() {
                 </div>
                 
                 <div class="form-group">
+                    <label class="form-label">Notificação:</label>
+                    <textarea class="form-control process-notification" rows="3" placeholder="Notificações"></textarea>
+                </div>
+                
+                <div class="form-group">
                     <label class="form-label">Número do Habite-se/Alvará:</label>
                     <input type="text" class="form-control process-habite" placeholder="Número do Habite-se/Alvará">
                 </div>
@@ -770,6 +776,7 @@ async function handleSaveAllEntries() {
                 contributor: form.querySelector('.process-contributor').value.trim(),
                 ctm: form.querySelector('.process-ctm').value.trim(),
                 observation: form.querySelector('.process-observation').value.trim(),
+                notification: form.querySelector('.process-notification').value.trim(),
                 habiteNumber: form.querySelector('.process-habite').value.trim(),
                 alvaraSituation: form.querySelector('.process-alvara').value.trim(),
                 server: currentUser,
@@ -1070,8 +1077,21 @@ window.deleteEntry = async function(entryId) {
     }
 };
 
-// Relatórios
-function setupReports() {
+window.showDetailModal = function(entryId) {
+    const entry = allEntries.find(e => e.id === entryId);
+    if (!entry) {
+        alert('Entrada não encontrada.');
+        return;
+    }
+
+    document.getElementById('detail-observation').value = entry.observation || '(sem observação)';
+    document.getElementById('detail-notification').value = entry.notification || '(sem notificação)';
+
+    const modal = document.getElementById('detail-modal');
+    if (modal) modal.classList.remove('hidden');
+};
+
+
     const personalBtn = document.getElementById('personal-report-btn');
     const completeBtn = document.getElementById('complete-report-btn');
     const generateBtn = document.getElementById('generate-report-btn');
@@ -1521,6 +1541,7 @@ function setupModals() {
     const closeModalBtn = document.getElementById('close-modal');
     const cancelProfileBtn = document.getElementById('cancel-profile');
     const cancelEditBtn = document.getElementById('cancel-edit');
+    const closeDetailModalBtn = document.getElementById('close-detail-modal');
     
     if (closeModalBtn) {
         closeModalBtn.addEventListener('click', hideSuccessModal);
@@ -1532,6 +1553,12 @@ function setupModals() {
     
     if (cancelEditBtn) {
         cancelEditBtn.addEventListener('click', hideEditModal);
+    }
+
+    if (closeDetailModalBtn) {
+        closeDetailModalBtn.addEventListener('click', function() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        });
     }
     
     // Fechar ao clicar fora
@@ -1573,6 +1600,7 @@ function showEditModal(entry) {
     document.getElementById('edit-contributor').value = entry.contributor || '';
     document.getElementById('edit-ctm').value = entry.ctm || '';
     document.getElementById('edit-observation').value = entry.observation || '';
+    document.getElementById('edit-notification').value = entry.notification || '';
     document.getElementById('edit-habite-number').value = entry.habiteNumber || '';
     document.getElementById('edit-alvara-situation').value = entry.alvaraSituation || '';
     
@@ -1598,6 +1626,7 @@ async function handleEditEntry(e) {
         contributor: document.getElementById('edit-contributor').value.trim(),
         ctm: document.getElementById('edit-ctm').value.trim(),
         observation: document.getElementById('edit-observation').value.trim(),
+        notification: document.getElementById('edit-notification').value.trim(),
         habiteNumber: document.getElementById('edit-habite-number').value.trim(),
         alvaraSituation: document.getElementById('edit-alvara-situation').value.trim()
     };
@@ -1836,10 +1865,15 @@ function displayCurrentPage() {
         const canEdit = entry.server === currentUser;
         const actionsHtml = canEdit ? `
             <div class="action-buttons">
+                <button class="btn--detail" onclick="showDetailModal('${entry.id}')" title="Ver Observação e Notificação">+</button>
                 <button class="btn--edit" onclick="editEntry('${entry.id}')">Editar</button>
                 <button class="btn--delete" onclick="deleteEntry('${entry.id}')">Excluir</button>
             </div>
-        ` : '-';
+        ` : `
+            <div class="action-buttons">
+                <button class="btn--detail" onclick="showDetailModal('${entry.id}')" title="Ver Observação e Notificação">+</button>
+            </div>
+        `;
 
         row.innerHTML = `
             <td>${entry.date || '-'}</td>
@@ -2213,6 +2247,12 @@ function createBulkProcessForm(processNumber) {
                           rows="2" placeholder="Observações sobre o processo"></textarea>
             </div>
 
+            <div class="form-group">
+                <label for="bulk-notification-${processNumber}">Notificação:</label>
+                <textarea id="bulk-notification-${processNumber}" class="form-control" 
+                          rows="2" placeholder="Notificações sobre o processo"></textarea>
+            </div>
+
             <div class="form-row">
                 <div class="form-group">
                     <label for="bulk-habite-${processNumber}">Número do Habite-se/Alvará:</label>
@@ -2344,6 +2384,7 @@ async function handleSaveAllBulkEntries() {
                 contributor: form.querySelector(`#bulk-contributor-${processNumber}`)?.value.trim() || '',
                 ctm: form.querySelector(`#bulk-ctm-${processNumber}`)?.value.trim() || '',
                 observation: form.querySelector(`#bulk-observation-${processNumber}`)?.value.trim() || '',
+                notification: form.querySelector(`#bulk-notification-${processNumber}`)?.value.trim() || '',
                 habiteNumber: form.querySelector(`#bulk-habite-${processNumber}`)?.value.trim() || '',
                 alvaraSituation: form.querySelector(`#bulk-alvara-situation-${processNumber}`)?.value.trim() || '',
                 server: currentUser,
@@ -2542,6 +2583,7 @@ async function handleMultiSubjectSubmit(e) {
     const contributor = document.getElementById('multi-contributor').value.trim();
     const ctm = document.getElementById('multi-ctm').value.trim();
     const observation = document.getElementById('multi-observation').value.trim();
+    const notification = document.getElementById('multi-notification').value.trim();
     const habiteNumber = document.getElementById('multi-habite-number').value.trim();
     const alvaraSituation = document.getElementById('multi-alvara-situation').value.trim();
 
@@ -2585,6 +2627,7 @@ async function handleMultiSubjectSubmit(e) {
                 contributor: contributor,
                 ctm: ctm,
                 observation: observation,
+                notification: notification,
                 habiteNumber: habiteNumber,
                 alvaraSituation: alvaraSituation,
                 server: currentUser,
