@@ -55,6 +55,7 @@ const USER_EMAIL_MAPPING = {
   "Rita": "rita@hotmail.com",
   "Mara": "mara@hotmail.com",
   "Tati": "tati@hotmail.com",
+  "Gabriela": "gabriela@hotmail.com",
   "Admin": "seplan.gluos@valadares.mg.gov.br"
 };
 
@@ -70,7 +71,7 @@ function emailToUsername(email) {
 
 // Dados da aplicação
 const GLUOS_DATA = {
-  usuarios: ["Eduardo", "Wendel", "Júlia", "Tati", "Sônia", "Rita", "Mara", "Admin"],
+  usuarios: ["Eduardo", "Wendel", "Júlia", "Tati", "Sônia", "Rita", "Mara", "Gabriela", "Admin"],
   assuntos: [
     {id: 1, texto: "Separar e Preparar os Processos Agendados no Dia"},
     {id: 2, texto: "Inserção de Avisos de Vistoria na E&L"},
@@ -770,7 +771,6 @@ async function handleSaveAllEntries() {
                 contributor: form.querySelector('.process-contributor').value.trim(),
                 ctm: form.querySelector('.process-ctm').value.trim(),
                 observation: form.querySelector('.process-observation').value.trim(),
-                notification: form.querySelector('.process-notification')?.value.trim() || '',
                 habiteNumber: form.querySelector('.process-habite').value.trim(),
                 alvaraSituation: form.querySelector('.process-alvara').value.trim(),
                 server: currentUser,
@@ -1034,25 +1034,6 @@ window.editEntry = function(entryId) {
     
     showEditModal(entry);
 };
-
-window.viewEntryDetails = function(entryId) {
-    const entry = allEntries.find(e => e.id === entryId);
-    if (!entry) {
-        alert('Entrada não encontrada.');
-        return;
-    }
-    const observationEl = document.getElementById('view-observation');
-    const notificationEl = document.getElementById('view-notification');
-    if (observationEl) observationEl.textContent = entry.observation?.trim() || '-';
-    if (notificationEl) notificationEl.textContent = entry.notification?.trim() || '-';
-    const modal = document.getElementById('view-modal');
-    if (modal) modal.classList.remove('hidden');
-}
-
-function hideViewModal() {
-    const modal = document.getElementById('view-modal');
-    if (modal) modal.classList.add('hidden');
-}
 
 window.deleteEntry = async function(entryId) {
     const entry = allEntries.find(e => e.id === entryId);
@@ -1618,7 +1599,6 @@ async function handleEditEntry(e) {
         contributor: document.getElementById('edit-contributor').value.trim(),
         ctm: document.getElementById('edit-ctm').value.trim(),
         observation: document.getElementById('edit-observation').value.trim(),
-        notification: document.getElementById('edit-notification').value.trim(),
         habiteNumber: document.getElementById('edit-habite-number').value.trim(),
         alvaraSituation: document.getElementById('edit-alvara-situation').value.trim()
     };
@@ -1859,7 +1839,6 @@ function displayCurrentPage() {
             <div class="action-buttons">
                 <button class="btn--edit" onclick="editEntry('${entry.id}')">Editar</button>
                 <button class="btn--delete" onclick="deleteEntry('${entry.id}')">Excluir</button>
-                    <button class="btn--view" onclick="viewEntryDetails('${entry.id}')" title="Ver observação e notificação">+</button>
             </div>
         ` : '-';
 
