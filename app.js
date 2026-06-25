@@ -569,6 +569,7 @@ async function handleNewEntry(e) {
     contributor: document.getElementById('contributor').value.trim(),
     ctm: document.getElementById('ctm').value.trim(),
     observation: document.getElementById('observation').value.trim(),
+        notification: document.getElementById('notification')?.value.trim() || '',
     habiteNumber: document.getElementById('habite-number').value.trim(),
     alvaraSituation: document.getElementById('alvara-situation').value.trim(),
     server: currentUser,
@@ -1020,6 +1021,19 @@ function clearDatabaseFilters() {
 }
 
 // Funções globais para editar/excluir
+window.viewEntryDetails = function(entryId) {
+    const entry = allEntries.find(e => e.id === entryId)
+    if (!entry) {
+        alert('Entrada não encontrada.')
+        return
+    }
+    const observationEl = document.getElementById('details-observation')
+    const notificationEl = document.getElementById('details-notification')
+    if (observationEl) observationEl.textContent = entry.observation || '-'
+    if (notificationEl) notificationEl.textContent = entry.notification || '-'
+    document.getElementById('details-modal')?.classList.remove('hidden')
+}
+
 window.editEntry = function(entryId) {
     const entry = allEntries.find(e => e.id === entryId);
     if (!entry) {
@@ -1034,25 +1048,6 @@ window.editEntry = function(entryId) {
     
     showEditModal(entry);
 };
-
-window.viewEntryDetails = function(entryId) {
-    const entry = allEntries.find(e => e.id === entryId);
-    if (!entry) {
-        alert('Entrada não encontrada.');
-        return;
-    }
-    const observationEl = document.getElementById('view-observation');
-    const notificationEl = document.getElementById('view-notification');
-    if (observationEl) observationEl.textContent = entry.observation?.trim() || '-';
-    if (notificationEl) notificationEl.textContent = entry.notification?.trim() || '-';
-    const modal = document.getElementById('view-modal');
-    if (modal) modal.classList.remove('hidden');
-}
-
-function hideViewModal() {
-    const modal = document.getElementById('view-modal');
-    if (modal) modal.classList.add('hidden');
-}
 
 window.deleteEntry = async function(entryId) {
     const entry = allEntries.find(e => e.id === entryId);
@@ -1592,11 +1587,17 @@ function showEditModal(entry) {
     document.getElementById('edit-process-number').value = entry.processNumber || '';
     document.getElementById('edit-contributor').value = entry.contributor || '';
     document.getElementById('edit-ctm').value = entry.ctm || '';
-    document.getElementById('edit-observation').value = entry.observation || '';
+    document.getElementById('edit-observation').value = entry.observation
+    document.getElementById('edit-notification').value = entry.notification || '' || '';
     document.getElementById('edit-habite-number').value = entry.habiteNumber || '';
     document.getElementById('edit-alvara-situation').value = entry.alvaraSituation || '';
     
     if (modal) modal.classList.remove('hidden');
+}
+
+function hideDetailsModal() {
+    const modal = document.getElementById('details-modal')
+    if (modal) modal.classList.add('hidden')
 }
 
 function hideEditModal() {
@@ -1857,10 +1858,8 @@ function displayCurrentPage() {
         const canEdit = entry.server === currentUser;
         const actionsHtml = canEdit ? `
             <div class="action-buttons">
-                <button class="btn--edit" onclick="editEntry('${entry.id}')">Editar</button>
+                <button class="btn--edit" onclick="editEntry('${entry.id}')">Editar</button><button class="btn--info-action" onclick="viewEntryDetails('${entry.id}')">+</button>
                 <button class="btn--delete" onclick="deleteEntry('${entry.id}')">Excluir</button>
-                    <button class="btn--view" onclick="viewEntryDetails('${entry.id}')" title="Ver observação e notificação">+</button>
-                    <button class="btn--view" onclick="viewEntryDetails('${entry.id}')" title="Ver observação e notificação">+</button>
             </div>
         ` : '-';
 

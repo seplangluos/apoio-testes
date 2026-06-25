@@ -163,11 +163,6 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="notification" class="form-label">Notificação:</label>
-                            <textarea id="notification" class="form-control" rows="4" placeholder="Digite suas notificações aqui..."></textarea>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="habite-number" class="form-label">Número do Habite-se/Alvará:</label>
                             <input type="text" id="habite-number" class="form-control" placeholder="Número do Habite-se/Alvará">
                         </div>
@@ -648,11 +643,6 @@
                         <label for="edit-observation" class="form-label">Observação:</label>
                         <textarea id="edit-observation" class="form-control" rows="4"></textarea>
                     </div>
-                        
-                        <div class="form-group">
-                            <label for="edit-notification" class="form-label">Notificação:</label>
-                            <textarea id="edit-notification" class="form-control" rows="4"></textarea>
-                        </div>
                     
                     <div class="form-group">
                         <label for="edit-habite-number" class="form-label">Número do Habite-se/Alvará:</label>
@@ -682,30 +672,7 @@
         </div>
     </div>
 
-
-    <!-- Modal de Visualização -->
-    <div id="view-modal" class="modal hidden">
-        <div class="modal-content modal-content--large">
-            <div class="modal-header">
-                <h3>Detalhes da Entrada</h3>
-            </div>
-            <div class="modal-body">
-                <div class="detail-section">
-                    <label class="form-label">Observação</label>
-                    <div id="view-observation" class="detail-box">-</div>
-                </div>
-                <div class="detail-section">
-                    <label class="form-label">Notificação</label>
-                    <div id="view-notification" class="detail-box">-</div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="close-view-modal" class="btn btn--primary">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loading Overlay -->
+    <!-- Modal de Visualização --> <div id="details-modal" class="modal hidden"> <div class="modal-content modal-content--large"> <div class="modal-header"><h3>Detalhes da Entrada</h3></div> <div class="modal-body"> <div class="details-grid"> <div class="details-block"> <h4>Observação</h4> <div id="details-observation" class="details-content">-</div> </div> <div class="details-block"> <h4>Notificação</h4> <div id="details-notification" class="details-content">-</div> </div> </div> </div> <div class="modal-footer"> <button type="button" id="close-details" class="btn btn--primary">Fechar</button> </div> </div> </div> <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay hidden">
         <div class="loading-content">
             <div class="loading-spinner"></div>
