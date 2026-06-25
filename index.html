@@ -163,11 +163,6 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="notification" class="form-label">Notificação:</label>
-                            <textarea id="notification" class="form-control" rows="4" placeholder="Digite as notificações aqui..."></textarea>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="habite-number" class="form-label">Número do Habite-se/Alvará:</label>
                             <input type="text" id="habite-number" class="form-control" placeholder="Número do Habite-se/Alvará">
                         </div>
@@ -650,11 +645,6 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="edit-notification" class="form-label">Notificação:</label>
-                        <textarea id="edit-notification" class="form-control" rows="4"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
                         <label for="edit-habite-number" class="form-label">Número do Habite-se/Alvará:</label>
                         <input type="text" id="edit-habite-number" class="form-control">
                     </div>
@@ -682,24 +672,25 @@
         </div>
     </div>
 
-    <!-- Modal de Detalhes (Observação + Notificação) -->
-    <div id="detail-modal" class="modal hidden">
+
+    <!-- Modal de Visualização -->
+    <div id="view-modal" class="modal hidden">
         <div class="modal-content modal-content--large">
             <div class="modal-header">
                 <h3>Detalhes da Entrada</h3>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label"><strong>Observação:</strong></label>
-                    <textarea id="detail-observation" class="form-control" rows="5" readonly style="background:#f5f5f5; resize:vertical;"></textarea>
+                <div class="detail-section">
+                    <label class="form-label">Observação</label>
+                    <div id="view-observation" class="detail-box">-</div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label"><strong>Notificação:</strong></label>
-                    <textarea id="detail-notification" class="form-control" rows="5" readonly style="background:#f5f5f5; resize:vertical;"></textarea>
+                <div class="detail-section">
+                    <label class="form-label">Notificação</label>
+                    <div id="view-notification" class="detail-box">-</div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="close-detail-modal" class="btn btn--primary">Fechar</button>
+                <button type="button" id="close-view-modal" class="btn btn--primary">Fechar</button>
             </div>
         </div>
     </div>
@@ -755,12 +746,6 @@
                                 <label for="multi-observation" class="form-label">Observação</label>
                                 <textarea id="multi-observation" class="form-control" rows="3"
                                           placeholder="Digite suas observações aqui..."></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="multi-notification" class="form-label">Notificação</label>
-                                <textarea id="multi-notification" class="form-control" rows="3"
-                                          placeholder="Digite as notificações aqui..."></textarea>
                             </div>
 
                             <div class="form-group">
