@@ -2881,3 +2881,31 @@ background: rgba(var(--color-success-rgb), 0.05);
 min-height: 60px;
 resize: vertical;
 }
+
+/* Estilos para o Guia do Sistema */
+.system-guide-card {
+  max-width: 900px;
+  margin: var(--space-32) auto 0 auto;
+  text-align: left;
+}
+
+.system-guide-card .card__header h4 {
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.guide-list {
+  margin: 0;
+  padding-left: var(--space-20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.guide-list li strong {
+  color: var(--color-primary);
+}
