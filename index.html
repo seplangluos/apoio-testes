@@ -6,6 +6,7 @@
     <title>GLUOS - Sistema de Produtividade</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.png" type="image/png" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Tela de Login -->
@@ -109,6 +110,10 @@
                 <button id="report-btn" class="btn btn--info btn--lg">
                     <span>📊</span>
                     Relatório
+                </button>
+                <button id="stats-btn" class="btn btn--primary btn--lg">
+                    <span>📈</span>
+                    Estatísticas
                 </button>
             </div>
 
@@ -867,5 +872,115 @@
             </div>
         </div>
     </div>
+<!-- Tela de Estatísticas -->
+<div id="stats-screen" class="screen">
+    <div class="screen-header">
+        <div class="container">
+            <div class="header-content">
+                <h2>Estatísticas do Sistema</h2>
+                <button id="back-to-dashboard-stats" class="btn btn--outline">Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Filtro de Mês/Ano -->
+        <div class="card mb-8">
+            <div class="card__body flex items-center gap-16 flex-wrap">
+                <label for="stats-month-filter" class="form-label m-0"><strong>Selecione o Mês/Ano:</strong></label>
+                <input type="month" id="stats-month-filter" class="form-control" style="width: auto;">
+                <button id="stats-filter-btn" class="btn btn--primary btn--sm">Filtrar</button>
+            </div>
+        </div>
+
+        <!-- Quadro de Estatísticas Principais -->
+        <div class="stats-summary-grid">
+            <div class="card stat-card">
+                <div class="card__body text-center">
+                    <span class="stat-icon">📂</span>
+                    <h3 id="stat-total-entries">0</h3>
+                    <p class="stat-label">Total Geral de Entradas</p>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card__body text-center">
+                    <span class="stat-icon">📅</span>
+                    <h3 id="stat-monthly-entries">0</h3>
+                    <p class="stat-label">Entradas no Mês</p>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card__body text-center">
+                    <span class="stat-icon">📊</span>
+                    <h3 id="stat-daily-avg">0</h3>
+                    <p class="stat-label">Média Diária (Dias Ativos)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quadro Top 10 Assuntos Mensais -->
+        <div class="card mt-8 mb-8">
+            <div class="card__header">
+                <h4>🏆 Top 10 Assuntos Mais Utilizados no Mês</h4>
+            </div>
+            <div class="card__body">
+                <ol id="stat-top10-list" class="top10-list">
+                    <li>Nenhum dado encontrado no mês.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Gráficos Mensais -->
+        <div class="card mt-8 mb-8">
+            <div class="card__header">
+                <h4>📈 Evolução Diária - Top 1 a 5 Assuntos do Mês</h4>
+            </div>
+            <div class="card__body">
+                <div class="chart-container">
+                    <canvas id="chart-top1-5"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-8 mb-8">
+            <div class="card__header">
+                <h4>📉 Evolução Diária - Top 6 a 10 Assuntos do Mês</h4>
+            </div>
+            <div class="card__body">
+                <div class="chart-container">
+                    <canvas id="chart-top6-10"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela Geral de Assuntos com % -->
+        <div class="card mt-8 mb-8">
+            <div class="card__header">
+                <h4>📋 Distribuição Geral por Tipo de Assunto</h4>
+            </div>
+            <div class="card__body">
+                <div class="table-container">
+                    <table class="data-table" id="stats-subject-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nome do Assunto</th>
+                                <th>Quantidade Total</th>
+                                <th>Porcentagem (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                        <tfoot>
+                            <!-- Soma total preenchida via JS -->
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     </body>
 </html>
