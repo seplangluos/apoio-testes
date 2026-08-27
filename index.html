@@ -22,6 +22,7 @@
             <a href="#" data-target="bulk-entries" class="nav-link">📝📋 Vários Novos</a>
             <a href="#" data-target="multi-subject-entries" class="nav-link">📑 Vários Assuntos</a>
             <a href="#" data-target="search" class="nav-link">🔍 Pesquisa</a>
+            <a href="#" data-target="search-eng" class="nav-link">👷 Pesquisa Engenheiro</a>
             <a href="#" data-target="database" class="nav-link">🗄️ Base de Dados</a>
             <a href="#" data-target="report" class="nav-link">📊 Relatórios</a>
             <a href="#" data-target="stats" class="nav-link">📈 Estatísticas</a>
@@ -127,6 +128,10 @@
                     <span>🔍</span>
                     Pesquisa
                 </button>
+                <button id="search-eng-btn" class="btn btn--warning btn--lg" style="background-color: #e68161; color: white;">
+                    <span>👷</span>
+                    Pesquisa Engenheiro
+                </button>
                 <button id="database-btn" class="btn btn--secondary btn--lg">
                     <span>🗄️</span>
                     Base de Dados Completa
@@ -156,13 +161,13 @@
                         <li><strong>Vários Novos:</strong> Cadastre múltiplos processos (até 10) sob um mesmo assunto de forma rápida.</li>
                         <li><strong>Novo: Vários Assuntos:</strong> Vincule até 5 assuntos diferentes a um único número de processo/protocolo.</li>
                         <li><strong>Pesquisa:</strong> Busque processos já lançados por número, data, servidor, contribuinte ou CTM responsável.</li>
+                        <li><strong>Pesquisa Engenheiro:</strong> Busque informações diretamente na base dos Analistas/Engenheiros.</li>
                         <li><strong>Base de Dados Completa:</strong> Visualize, filtre, edite ou exclua todos os registros armazenados no sistema.</li>
                         <li><strong>Perfil:</strong> Altere sua senha e gerencie suas credenciais de acesso.</li>
                         <li><strong>Relatório:</strong> Gere relatórios pessoais de produtividade ou relatórios consolidados por equipe.</li>
                     </ul>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -292,7 +297,7 @@
         </div>
     </div>
 
-    <!-- Tela de Pesquisa -->
+    <!-- Tela de Pesquisa Original -->
     <div id="search-screen" class="screen">
         <div class="screen-header">
             <div class="container">
@@ -365,6 +370,97 @@
                     <h3>Resultados da Pesquisa</h3>
                     <div class="table-container">
                         <table id="search-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Hora</th>
+                                    <th>Servidor</th>
+                                    <th>N° Processo</th>
+                                    <th>Assunto</th>
+                                    <th>Contribuinte</th>
+                                    <th>CTM</th>
+                                    <th>Observação</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVA TELA: Pesquisa Engenheiro -->
+    <div id="search-eng-screen" class="screen">
+        <div class="screen-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="flex items-center gap-16">
+                        <button class="mobile-menu-btn btn btn--outline">☰ Menu</button>
+                        <h2>Pesquisar Analistas/Engenheiros</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container search-wide">
+            <div class="search-container">
+                <div class="search-form card">
+                    <div class="card__body">
+                        <div class="search-tabs">
+                            <button type="button" class="tab-btn search-eng-tab active" data-tab="process-search-eng">Por Processo</button>
+                            <button type="button" class="tab-btn search-eng-tab" data-tab="date-search-eng">Por Data</button>
+                            <button type="button" class="tab-btn search-eng-tab" data-tab="server-search-eng">Por Servidor</button>
+                            <button type="button" class="tab-btn search-eng-tab" data-tab="contributor-search-eng">Por Contribuinte</button>
+                            <button type="button" class="tab-btn search-eng-tab" data-tab="ctm-search-eng">Por CTM</button>
+                        </div>
+                        
+                        <div id="process-search-eng" class="search-tab search-eng-panel active">
+                            <div class="form-group">
+                                <label for="input-process-eng" class="form-label">Número do Processo:</label>
+                                <input type="text" id="input-process-eng" class="form-control" placeholder="Digite o número exato do processo">
+                            </div>
+                        </div>
+                        
+                        <div id="date-search-eng" class="search-tab search-eng-panel">
+                            <div class="form-group">
+                                <label for="input-date-eng" class="form-label">Data:</label>
+                                <input type="date" id="input-date-eng" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div id="server-search-eng" class="search-tab search-eng-panel">
+                            <div class="form-group">
+                                <label for="input-server-eng" class="form-label">Servidor:</label>
+                                <input type="text" id="input-server-eng" class="form-control" placeholder="Digite o nome exato do servidor">
+                            </div>
+                        </div>
+
+                        <div id="contributor-search-eng" class="search-tab search-eng-panel">
+                            <div class="form-group">
+                                <label for="input-contributor-eng" class="form-label">Nome do Contribuinte:</label>
+                                <input type="text" id="input-contributor-eng" class="form-control" placeholder="Digite o nome exato do contribuinte">
+                            </div>
+                        </div>
+
+                        <div id="ctm-search-eng" class="search-tab search-eng-panel">
+                            <div class="form-group">
+                                <label for="input-ctm-eng" class="form-label">CTM:</label>
+                                <input type="text" id="input-ctm-eng" class="form-control" placeholder="Digite o CTM exato">
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="search-submit-eng" class="btn btn--warning">
+                            <span id="search-btn-text-eng">Pesquisar na Base de Engenheiros</span>
+                            <span id="search-loader-eng" class="hidden">Pesquisando e Baixando...</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="search-results-eng" class="results-container hidden">
+                    <h3>Resultados da Pesquisa - Engenharia</h3>
+                    <div class="table-container">
+                        <table id="search-table-eng" class="data-table">
                             <thead>
                                 <tr>
                                     <th>Data</th>
@@ -706,7 +802,10 @@
                         <div class="form-section">
                             <h3 class="section-title">Assuntos (até 5)</h3>
 
-                            <!-- Assunto 1 -->
+                            <!-- Assuntos 1 a 5 omitidos para brevidade da cópia (manter como estava no original) -->
+                            <!-- ... -->
+                            
+                            <!-- Exemplo Assunto 1 -->
                             <div class="subject-row">
                                 <h4>Assunto 1</h4>
                                 <div class="form-row">
@@ -723,75 +822,56 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Assunto 2 -->
+                            <!-- ... (mesma coisa para 2, 3, 4 e 5) ... -->
                             <div class="subject-row">
                                 <h4>Assunto 2</h4>
                                 <div class="form-row">
                                     <div class="form-group id-group">
                                         <label for="subject2-id" class="form-label">ID (1-50)</label>
-                                        <input type="number" id="subject2-id" class="form-control subject-id" 
-                                               min="1" max="50" placeholder="ID">
+                                        <input type="number" id="subject2-id" class="form-control subject-id" min="1" max="50" placeholder="ID">
                                     </div>
                                     <div class="form-group select-group">
                                         <label for="subject2-select" class="form-label">Selecione o assunto</label>
-                                        <select id="subject2-select" class="form-control subject-select">
-                                            <option value="">-- Selecione o assunto --</option>
-                                        </select>
+                                        <select id="subject2-select" class="form-control subject-select"><option value="">-- Selecione o assunto --</option></select>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Assunto 3 -->
                             <div class="subject-row">
                                 <h4>Assunto 3</h4>
                                 <div class="form-row">
                                     <div class="form-group id-group">
                                         <label for="subject3-id" class="form-label">ID (1-50)</label>
-                                        <input type="number" id="subject3-id" class="form-control subject-id" 
-                                               min="1" max="50" placeholder="ID">
+                                        <input type="number" id="subject3-id" class="form-control subject-id" min="1" max="50" placeholder="ID">
                                     </div>
                                     <div class="form-group select-group">
                                         <label for="subject3-select" class="form-label">Selecione o assunto</label>
-                                        <select id="subject3-select" class="form-control subject-select">
-                                            <option value="">-- Selecione o assunto --</option>
-                                        </select>
+                                        <select id="subject3-select" class="form-control subject-select"><option value="">-- Selecione o assunto --</option></select>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Assunto 4 -->
                             <div class="subject-row">
                                 <h4>Assunto 4</h4>
                                 <div class="form-row">
                                     <div class="form-group id-group">
                                         <label for="subject4-id" class="form-label">ID (1-50)</label>
-                                        <input type="number" id="subject4-id" class="form-control subject-id" 
-                                               min="1" max="50" placeholder="ID">
+                                        <input type="number" id="subject4-id" class="form-control subject-id" min="1" max="50" placeholder="ID">
                                     </div>
                                     <div class="form-group select-group">
                                         <label for="subject4-select" class="form-label">Selecione o assunto</label>
-                                        <select id="subject4-select" class="form-control subject-select">
-                                            <option value="">-- Selecione o assunto --</option>
-                                        </select>
+                                        <select id="subject4-select" class="form-control subject-select"><option value="">-- Selecione o assunto --</option></select>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Assunto 5 -->
                             <div class="subject-row">
                                 <h4>Assunto 5</h4>
                                 <div class="form-row">
                                     <div class="form-group id-group">
                                         <label for="subject5-id" class="form-label">ID (1-50)</label>
-                                        <input type="number" id="subject5-id" class="form-control subject-id" 
-                                               min="1" max="50" placeholder="ID">
+                                        <input type="number" id="subject5-id" class="form-control subject-id" min="1" max="50" placeholder="ID">
                                     </div>
                                     <div class="form-group select-group">
                                         <label for="subject5-select" class="form-label">Selecione o assunto</label>
-                                        <select id="subject5-select" class="form-control subject-select">
-                                            <option value="">-- Selecione o assunto --</option>
-                                        </select>
+                                        <select id="subject5-select" class="form-control subject-select"><option value="">-- Selecione o assunto --</option></select>
                                     </div>
                                 </div>
                             </div>
@@ -920,7 +1000,7 @@
         </div>
     </div>
 
-    <!-- Modais -->
+    <!-- Modais omitidos pois permanecem idênticos -->
     <!-- Modal de Sucesso -->
     <div id="success-modal" class="modal hidden">
         <div class="modal-content">
@@ -1047,6 +1127,8 @@
             <p>Conectando ao Firebase...</p>
         </div>
     </div>
+
+    <script type="module" src="app.js"></script>
 
 </body>
 </html>

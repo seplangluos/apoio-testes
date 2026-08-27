@@ -2,7 +2,7 @@
 // Integração completa com Firebase - Versão com Firebase Authentication
 // Importações do Firebase v9+
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-import { getDatabase, ref, push, set, get, update, remove, onValue } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
+import { getDatabase, ref, push, set, get, update, remove, onValue, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
 import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
@@ -19,7 +19,7 @@ const firebaseConfig = {
   appId: "1:200346424322:web:d359faf0c8582c58c0031b"
 };
 
-// Configuração da base de processos (NOVA)
+// Configuração da base de processos
 const firebaseConfigProcessos = {
   apiKey: "AIzaSyAWbo9MCRjE4776A_DpjJCWHPZap-goJDg",
   authDomain: "processos-gluos.firebaseapp.com",
@@ -28,6 +28,17 @@ const firebaseConfigProcessos = {
   storageBucket: "processos-gluos.firebasestorage.app",
   messagingSenderId: "189917349181",
   appId: "1:189917349181:web:efac81f4ed118cb48af154"
+};
+
+// Configuração da base de ENGENHEIROS (NOVA)
+const firebaseConfigEngenheiro = {
+  apiKey: "AIzaSyA0VMrw376nud-wBXrgmuHwMjx4Ca0oPH8",
+  authDomain: "gluos-analistas.firebaseapp.com",
+  databaseURL: "https://gluos-analistas-default-rtdb.firebaseio.com",
+  projectId: "gluos-analistas",
+  storageBucket: "gluos-analistas.firebasestorage.app",
+  messagingSenderId: "897464498657",
+  appId: "1:897464498657:web:64ad17ffc97f44796cfaa0"
 };
 
 // Inicializar Firebase principal
@@ -40,7 +51,7 @@ try {
   console.error('Erro ao inicializar Firebase:', error);
 }
 
-// Inicializar Firebase de processos (NOVO)
+// Inicializar Firebase de processos
 let processosApp, processosDatabase;
 try {
   processosApp = initializeApp(firebaseConfigProcessos, 'processosApp');
@@ -48,6 +59,19 @@ try {
 } catch (error) {
   console.error('Erro ao inicializar Firebase de processos:', error);
 }
+
+// Inicializar Firebase de Engenheiros (NOVO)
+let engenheiroApp, engenheiroDatabase;
+try {
+  engenheiroApp = initializeApp(firebaseConfigEngenheiro, 'engenheiroApp');
+  engenheiroDatabase = getDatabase(engenheiroApp);
+} catch (error) {
+  console.error('Erro ao inicializar Firebase de engenheiros:', error);
+}
+
+// ---> MUDE AQUI PARA O NOME REAL DO NÓ DA SUA BASE DE ENGENHEIROS <---
+const ENGENHEIRO_DB_NODE = 'gluos_entries'; // Supondo que seja o mesmo nome da principal
+
 
 // Mapeamento de usuários para emails
 const USER_EMAIL_MAPPING = {
@@ -232,6 +256,7 @@ function setupEventListeners() {
   setupNewEntry();
   setupMultipleEntries();
   setupSearch();
+  setupSearchEng(); // <--- INICIALIZAR NOVA PESQUISA
   setupDatabase();
   setupReports();
   setupBulkEntries();
@@ -252,6 +277,7 @@ function setupMainNavigation() {
     { id: 'bulk-entries-btn', screen: 'bulk-entries' },
     { id: 'multi-subject-entries-btn', screen: 'multi-subject-entries' },
     { id: 'search-btn', screen: 'search' },
+    { id: 'search-eng-btn', screen: 'search-eng' }, // <--- BOTÃO NOVO
     { id: 'database-btn', screen: 'database', callback: loadDatabaseTable },
     { id: 'profile-btn', callback: showProfileModal },
     { id: 'report-btn', screen: 'report' },
@@ -662,10 +688,10 @@ async function handleSaveAllEntries() {
 }
 
 // ===============================================
-// PESQUISA ATUALIZADA (INCLUINDO FILTROS NOVOS)
+// PESQUISA ORIGINAL
 // ===============================================
 function setupSearch() {
-    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabButtons = document.querySelectorAll('.tab-btn:not(.search-eng-tab)');
     tabButtons.forEach(btn => {
         btn.addEventListener('click', function() {
             const tabName = this.dataset.tab;
@@ -678,15 +704,15 @@ function setupSearch() {
 }
 
 function switchSearchTab(tabName) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-btn:not(.search-eng-tab)').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
     
-    document.querySelectorAll('.search-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.search-tab:not(.search-eng-panel)').forEach(tab => tab.classList.remove('active'));
     document.getElementById(tabName + '-search')?.classList.add('active');
 }
 
 async function handleSearch() {
-    const activeTab = document.querySelector('.search-tab.active');
+    const activeTab = document.querySelector('.search-tab:not(.search-eng-panel).active');
     if (!activeTab) return;
     
     const searchBtn = document.getElementById('search-submit');
@@ -724,7 +750,7 @@ async function handleSearch() {
             );
         }
         
-        displaySearchResults(filteredEntries);
+        displaySearchResults(filteredEntries, 'search-table', 'search-results');
         
     } catch (error) {
         alert('Erro ao pesquisar. Tente novamente.');
@@ -733,14 +759,46 @@ async function handleSearch() {
     }
 }
 
-function displaySearchResults(entries) {
-    const resultsContainer = document.getElementById('search-results');
-    const tableBody = document.querySelector('#search-table tbody');
+function displaySearchResults(entries, tableId, containerId) {
+    const resultsContainer = document.getElementById(containerId);
+    const tableBody = document.querySelector(`#${tableId} tbody`);
     
     if (!resultsContainer || !tableBody) return;
     
     tableBody.innerHTML = '';
     
+    // --- LÓGICA DE ORDENAÇÃO DECRESCENTE (Mais Novo -> Mais Antigo) ---
+    entries.sort((a, b) => {
+        // Se o registro tiver timestamp, é a forma mais precisa de ordenar
+        if (a.timestamp && b.timestamp) {
+            return b.timestamp - a.timestamp;
+        }
+        
+        // Fallback: se não tiver timestamp, converte a string de data (DD/MM/YYYY) e hora (HH:MM)
+        const parseDate = (entry) => {
+            if (!entry.date) return 0;
+            const parts = entry.date.split('/');
+            if (parts.length !== 3) return 0;
+            
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // Mês no JS começa em 0
+            const year = parseInt(parts[2], 10);
+            
+            let hour = 0, minute = 0;
+            if (entry.time) {
+                const timeParts = entry.time.split(':');
+                if (timeParts.length >= 2) {
+                    hour = parseInt(timeParts[0], 10);
+                    minute = parseInt(timeParts[1], 10);
+                }
+            }
+            return new Date(year, month, day, hour, minute).getTime();
+        };
+        
+        return parseDate(b) - parseDate(a);
+    });
+    // -----------------------------------------------------------------
+
     if (entries.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="8" class="text-center">Nenhum resultado encontrado.</td></tr>`;
     } else {
@@ -762,6 +820,92 @@ function displaySearchResults(entries) {
     
     resultsContainer.classList.remove('hidden');
 }
+
+
+// ===============================================
+// NOVA PESQUISA: ENGENHEIROS (Consulta Direto no Servidor)
+// ===============================================
+function setupSearchEng() {
+    const tabButtons = document.querySelectorAll('.search-eng-tab');
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabName = this.dataset.tab;
+            switchSearchEngTab(tabName);
+        });
+    });
+    
+    const searchBtn = document.getElementById('search-submit-eng');
+    if (searchBtn) searchBtn.addEventListener('click', handleSearchEng);
+}
+
+function switchSearchEngTab(tabName) {
+    document.querySelectorAll('.search-eng-tab').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
+    
+    document.querySelectorAll('.search-eng-panel').forEach(tab => tab.classList.remove('active'));
+    document.getElementById(tabName)?.classList.add('active');
+}
+
+async function handleSearchEng() {
+    if (!engenheiroDatabase) return alert("Erro: O banco de dados de Engenharia não está conectado.");
+
+    const activeTab = document.querySelector('.search-eng-panel.active');
+    if (!activeTab) return;
+    
+    const searchBtn = document.getElementById('search-submit-eng');
+    setButtonLoading(searchBtn, true);
+    
+    let searchField = '';
+    let searchValue = '';
+    
+    try {
+        if (activeTab.id === 'process-search-eng') {
+            searchField = 'processNumber';
+            searchValue = document.getElementById('input-process-eng').value.trim();
+        } else if (activeTab.id === 'date-search-eng') {
+            searchField = 'date';
+            const rawDate = document.getElementById('input-date-eng').value;
+            searchValue = rawDate ? new Date(rawDate + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+        } else if (activeTab.id === 'server-search-eng') {
+            searchField = 'server';
+            searchValue = document.getElementById('input-server-eng').value.trim();
+        } else if (activeTab.id === 'contributor-search-eng') {
+            searchField = 'contributor';
+            searchValue = document.getElementById('input-contributor-eng').value.trim();
+        } else if (activeTab.id === 'ctm-search-eng') {
+            searchField = 'ctm';
+            searchValue = document.getElementById('input-ctm-eng').value.trim();
+        }
+        
+        if (!searchValue) {
+            alert('Por favor, preencha o campo de busca.');
+            setButtonLoading(searchBtn, false);
+            return;
+        }
+
+        // Executa a Query Direto no Servidor para economizar Download do Firebase
+        const dbRef = ref(engenheiroDatabase, ENGENHEIRO_DB_NODE);
+        const engineQuery = query(dbRef, orderByChild(searchField), equalTo(searchValue));
+        
+        const snapshot = await get(engineQuery);
+        let results = [];
+        
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                results.push({ id: childSnapshot.key, ...childSnapshot.val() });
+            });
+        }
+        
+        displaySearchResults(results, 'search-table-eng', 'search-results-eng');
+        
+    } catch (error) {
+        console.error("Erro na busca de engenheiro:", error);
+        alert('Erro ao pesquisar. (Lembre-se de adicionar o .indexOn nas Regras do seu Firebase). Tente novamente.');
+    } finally {
+        setButtonLoading(searchBtn, false);
+    }
+}
+
 
 // Base de dados
 function setupDatabase() {
